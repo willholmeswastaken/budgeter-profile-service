@@ -4,6 +4,9 @@ import { v4 as guid } from 'uuid';
 import RecordNotFoundException from '../models/Exceptions/RecordNotFoundException';
 import LogEventNames from '../models/LogEventNames';
 import { BudgetProfile } from "../models/BudgetProfile";
+import { RepositoryResult } from '../models/RepositoryResult';
+import { RepositoryFailureStatus } from '../models/Enums/RepositoryFailureStatus';
+
 import { BaseRepository } from "./BaseRepository";
 import { IBudgetProfileRepository } from "./IBudgetProfileRepository";
 
@@ -46,19 +49,27 @@ class BudgetProfileRepository extends BaseRepository implements IBudgetProfileRe
     getById(id: string): Promise<BudgetProfile> {
         throw new Error("Method not implemented.");
     }
-    async save(t: BudgetProfile): Promise<BudgetProfile> {
+    update(t: BudgetProfile): Promise<boolean> {
+        throw new Error('Method not implemented.');
+    }
+    async create(t: BudgetProfile): Promise<RepositoryResult<BudgetProfile>> {
+        t.id = guid();
         const params = {
             TableName: this.tableName,
             Item: t
         };
-        t.id = guid();
         try {
             var res = await this.dbClient.put(params).promise();
             console.log(JSON.stringify(res));
+            return {
+                result: t
+            } as RepositoryResult<BudgetProfile>;
         } catch (err) {
             console.log('Failed to save', err.message);
-        } finally {
-            return t;
+            return {
+                result: null,
+                error: RepositoryFailureStatus.Error
+            } as RepositoryResult<BudgetProfile>;
         }
     }
 }
