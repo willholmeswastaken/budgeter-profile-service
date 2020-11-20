@@ -1,4 +1,4 @@
-import { RepositoryFailureStatus } from "./Enums/RepositoryFailureStatus";
+import RepositoryFailureStatus from "./Enums/RepositoryFailureStatus";
 
 interface RepositoryResult<T> {
     error: RepositoryFailureStatus;
