@@ -8,7 +8,7 @@ import 'reflect-metadata';
 import { InversifyExpressServer } from 'inversify-express-utils';
 
 import './api/controllers';
-import container from './Container';
+import container from './container';
 
 const app = express();
 
