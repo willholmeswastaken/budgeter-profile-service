@@ -1,4 +1,4 @@
-import BudgetController from './budgetController';
+import BudgetController from './BudgetController';
 
 export default {
     BudgetController

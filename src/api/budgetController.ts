@@ -38,8 +38,8 @@ class BudgetController implements interfaces.Controller {
   public async create(@request() req: Request, @response() res: Response) {
     var budgetProfile = req.body as BudgetProfile;
     if(!this._budgetProfileValidator.isValid(budgetProfile)) return res.status(400).send('Invalid request body');
+    
     var createResponse = await this._budgetProfileRepository.create(req.body);
-    console.log(createResponse);
     switch(createResponse.error) {
       case RepositoryFailureStatus.Error:
         return res.status(500).send(createResponse.error);
