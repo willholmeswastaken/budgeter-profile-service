@@ -1,4 +1,5 @@
 import express from 'express';
+import bodyParser from 'body-parser';
 import helmet from 'helmet';
 import cors from 'cors';
 import compress from 'compression';
@@ -11,6 +12,7 @@ import container from './container';
 
 const app = express();
 
+app.use(bodyParser.json());
 app.use(helmet());
 app.use(cors());
 app.use(compress());

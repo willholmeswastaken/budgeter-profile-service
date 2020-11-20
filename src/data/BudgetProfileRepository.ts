@@ -3,12 +3,12 @@ import { v4 as guid } from 'uuid';
 
 import RecordNotFoundException from '../models/Exceptions/RecordNotFoundException';
 import LogEventNames from '../models/LogEventNames';
-import { BudgetProfile } from "../models/BudgetProfile";
-import { RepositoryResult } from '../models/RepositoryResult';
-import { RepositoryFailureStatus } from '../models/Enums/RepositoryFailureStatus';
+import BudgetProfile from "../models/BudgetProfile";
+import RepositoryResult from '../models/RepositoryResult';
+import RepositoryFailureStatus from '../models/Enums/RepositoryFailureStatus';
 
-import { BaseRepository } from "./BaseRepository";
-import { IBudgetProfileRepository } from "./IBudgetProfileRepository";
+import BaseRepository from "./BaseRepository";
+import IBudgetProfileRepository from "./IBudgetProfileRepository";
 
 @injectable()
 class BudgetProfileRepository extends BaseRepository implements IBudgetProfileRepository {
@@ -53,14 +53,20 @@ class BudgetProfileRepository extends BaseRepository implements IBudgetProfileRe
         throw new Error('Method not implemented.');
     }
     async create(t: BudgetProfile): Promise<RepositoryResult<BudgetProfile>> {
-        t.id = guid();
+        const existingRecord: BudgetProfile = await this.getProfileByEmail(t.email);
+        if(existingRecord) 
+        return {
+            result: existingRecord
+        } as RepositoryResult<BudgetProfile>;
+
+        t.Id = guid();
         const params = {
             TableName: this.tableName,
             Item: t
         };
+
         try {
-            var res = await this.dbClient.put(params).promise();
-            console.log(JSON.stringify(res));
+            await this.dbClient.put(params).promise();
             return {
                 result: t
             } as RepositoryResult<BudgetProfile>;

@@ -1,5 +1,7 @@
 import { DocumentClient } from "aws-sdk/clients/dynamodb";
 
-export interface IBaseRepository {
+interface IBaseRepository {
     dbClient: DocumentClient;
 }
+
+export default IBaseRepository;

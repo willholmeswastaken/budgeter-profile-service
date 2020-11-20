@@ -1,5 +1,7 @@
-export interface Allocations {
+interface Allocations {
     bills: number;
     spending: number;
     savings: number;
 }
+
+export default Allocations;

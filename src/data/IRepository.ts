@@ -1,6 +1,6 @@
-import { RepositoryResult } from "../models/RepositoryResult";
+import RepositoryResult from "../models/RepositoryResult";
 
-export interface IRepository<T> {
+interface IRepository<T> {
     tableName: string;
     exists(t: T): Promise<boolean>;
     delete(t: T): Promise<any>;
@@ -8,3 +8,5 @@ export interface IRepository<T> {
     create(t: T): Promise<RepositoryResult<T>>;
     update(t: T): Promise<boolean>;
 }
+
+export default IRepository;

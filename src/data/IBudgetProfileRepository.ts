@@ -1,6 +1,8 @@
-import { BudgetProfile } from "../models/BudgetProfile";
-import { IRepository } from "./IRepository";
+import BudgetProfile from "../models/BudgetProfile";
+import IRepository from "./IRepository";
 
-export interface IBudgetProfileRepository extends IRepository<BudgetProfile> {
+interface IBudgetProfileRepository extends IRepository<BudgetProfile> {
     getProfileByEmail(email: string): Promise<BudgetProfile>;
 }
+
+export default IBudgetProfileRepository;
