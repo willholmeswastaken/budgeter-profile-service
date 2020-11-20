@@ -7,7 +7,7 @@ import morgan from 'morgan';
 import 'reflect-metadata';
 import { InversifyExpressServer } from 'inversify-express-utils';
 
-import './api/Controllers';
+import './api/controllers';
 import container from './Container';
 
 const app = express();
