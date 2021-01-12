@@ -1,4 +1,4 @@
-import { Allocations } from "../Allocations";
+import Allocations from "../Allocations";
 
 interface BudgetProfileResponse {
     email: string;

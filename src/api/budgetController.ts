@@ -1,16 +1,16 @@
 import { Body, Get, JsonController, OnNull, Post, QueryParam} from "routing-controllers";
-import { RepositoryFailureStatus } from '../models/Enums/RepositoryFailureStatus';
+import RepositoryFailureStatus from '../models/Enums/RepositoryFailureStatus';
 import { BudgetProfileRepository } from '../services';
 import { BudgetProfileNotFoundError, BudgetProfileCreationError, BudgetProfileCreationValidationError } from '../models/HttpErrors';
 import BudgetProfileCreationRequestModel from '../models/HttpRequests/BudgetProfileCreationRequestModel';
 import BudgetProfileResponse from '../models/HttpResponses/BudgetProfileResponse';
 import RecordNotFoundException from '../models/Exceptions/RecordNotFoundException';
+import BudgetProfileValidator from "../services/BudgetProfileValidator";
 
 
 @JsonController()
 class BudgetController {
-  constructor(private budgetProfileRepository: BudgetProfileRepository) {
-  }
+  constructor(private budgetProfileRepository: BudgetProfileRepository, private budgetProfileValidator: BudgetProfileValidator) {}
 
   @Get("/budgetProfile")
   @OnNull(BudgetProfileNotFoundError)
@@ -20,6 +20,7 @@ class BudgetController {
 
   @Post("/budgetProfile")
   public async create(@Body() budgetProfileCreationReq: BudgetProfileCreationRequestModel) {
+    if(!this.budgetProfileValidator.isValid(budgetProfileCreationReq)) throw new BudgetProfileCreationValidationError();
     try {
       const existingRecord = await this.budgetProfileRepository.getProfileByEmail(budgetProfileCreationReq.email);
       if (existingRecord !== null) {

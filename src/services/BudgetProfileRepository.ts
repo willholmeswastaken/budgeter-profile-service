@@ -3,12 +3,12 @@ import { v4 as guid } from 'uuid';
 
 import RecordNotFoundException from '../models/Exceptions/RecordNotFoundException';
 import LogEventNames from '../models/LogEventNames';
-import { BudgetProfile } from "../models/BudgetProfile";
-import { RepositoryResult } from '../models/RepositoryResult';
-import { RepositoryFailureStatus } from '../models/Enums/RepositoryFailureStatus';
+import BudgetProfile from "../models/BudgetProfile";
+import RepositoryResult from '../models/RepositoryResult';
+import RepositoryFailureStatus from '../models/Enums/RepositoryFailureStatus';
 
 import { BaseRepository } from "../data/BaseRepository";
-import { IBudgetProfileRepository } from "./IBudgetProfileRepository";
+import IBudgetProfileRepository from "./IBudgetProfileRepository";
 import BudgetProfileCreationRequestModel from "../models/HttpRequests/BudgetProfileCreationRequestModel";
 
 @Service()
@@ -64,6 +64,7 @@ export class BudgetProfileRepository extends BaseRepository implements IBudgetPr
             TableName: this.tableName,
             Item: model
         };
+
         try {
             await this.dbClient.put(params).promise();
             return {

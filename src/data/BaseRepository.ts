@@ -1,6 +1,6 @@
 import AWS from "aws-sdk";
 import { DocumentClient } from "aws-sdk/clients/dynamodb";
-import { IBaseRepository } from "./IBaseRepository";
+import IBaseRepository from "./IBaseRepository";
 import awsConfig from '../config/aws-config.json';
 
 export class BaseRepository implements IBaseRepository {
@@ -11,3 +11,5 @@ export class BaseRepository implements IBaseRepository {
         this.dbClient = new DocumentClient();
     }
 }
+
+export default BaseRepository;

@@ -1,7 +1,7 @@
 import { SavingsAccountType } from "./Constants";
-import { FinanceAccount } from "./FinanceAccount";
+import FinanceAccount from "./FinanceAccount";
 
-export class SavingsAccount implements FinanceAccount {
+class SavingsAccount implements FinanceAccount {
     name: string;
     balance: number;
     type: string = SavingsAccountType;
@@ -11,3 +11,5 @@ export class SavingsAccount implements FinanceAccount {
         this.balance = balance;
     }
 }
+
+export default SavingsAccount

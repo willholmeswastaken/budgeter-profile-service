@@ -1,4 +1,4 @@
-import { Allocations } from "./Allocations";
+import Allocations from "./Allocations";
 // import { FinanceAccount } from "./FinanceAccount";
 
 export interface BudgetProfile {
@@ -10,3 +10,5 @@ export interface BudgetProfile {
     //TODO: Bring in the below functionality
     // accounts: FinanceAccount[];
 }
+
+export default BudgetProfile;
