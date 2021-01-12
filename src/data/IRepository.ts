@@ -5,6 +5,6 @@ export interface IRepository<T> {
     exists(t: T): Promise<boolean>;
     delete(t: T): Promise<any>;
     getById(id: string): Promise<T>;
-    create(t: T): Promise<RepositoryResult<T>>;
+    create(t: any): Promise<RepositoryResult<T>>;
     update(t: T): Promise<boolean>;
 }

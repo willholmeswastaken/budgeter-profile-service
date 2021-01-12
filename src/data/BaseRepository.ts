@@ -2,9 +2,7 @@ import AWS from "aws-sdk";
 import { DocumentClient } from "aws-sdk/clients/dynamodb";
 import { IBaseRepository } from "./IBaseRepository";
 import awsConfig from '../config/aws-config.json';
-import { injectable } from "inversify";
 
-@injectable()
 export class BaseRepository implements IBaseRepository {
     dbClient: DocumentClient;
 

@@ -1,10 +1,12 @@
 import { Allocations } from "./Allocations";
-import { FinanceAccount } from "./FinanceAccount";
+// import { FinanceAccount } from "./FinanceAccount";
 
 export interface BudgetProfile {
-    id: string;
+    Id: string;
     email: string;
     monthlyIncome: number;
     allocations: Allocations;
-    accounts: FinanceAccount[];
+    
+    //TODO: Bring in the below functionality
+    // accounts: FinanceAccount[];
 }

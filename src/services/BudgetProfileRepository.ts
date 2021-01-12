@@ -1,4 +1,4 @@
-import { injectable } from 'inversify';
+import { Service } from "typedi";
 import { v4 as guid } from 'uuid';
 
 import RecordNotFoundException from '../models/Exceptions/RecordNotFoundException';
@@ -7,11 +7,12 @@ import { BudgetProfile } from "../models/BudgetProfile";
 import { RepositoryResult } from '../models/RepositoryResult';
 import { RepositoryFailureStatus } from '../models/Enums/RepositoryFailureStatus';
 
-import { BaseRepository } from "./BaseRepository";
+import { BaseRepository } from "../data/BaseRepository";
 import { IBudgetProfileRepository } from "./IBudgetProfileRepository";
+import BudgetProfileCreationRequestModel from "../models/HttpRequests/BudgetProfileCreationRequestModel";
 
-@injectable()
-class BudgetProfileRepository extends BaseRepository implements IBudgetProfileRepository {
+@Service()
+export class BudgetProfileRepository extends BaseRepository implements IBudgetProfileRepository {
     tableName: string;
 
     constructor() {
@@ -28,7 +29,7 @@ class BudgetProfileRepository extends BaseRepository implements IBudgetProfileRe
         };
 
         try {
-            var data = await (await this.dbClient.query(params).promise()).Items;
+            const data = await (await this.dbClient.query(params).promise()).Items;
             if(data.length > 0) {
                 return <BudgetProfile>data[0];
             } else {
@@ -52,20 +53,23 @@ class BudgetProfileRepository extends BaseRepository implements IBudgetProfileRe
     update(t: BudgetProfile): Promise<boolean> {
         throw new Error('Method not implemented.');
     }
-    async create(t: BudgetProfile): Promise<RepositoryResult<BudgetProfile>> {
-        t.id = guid();
+    async create(t: BudgetProfileCreationRequestModel): Promise<RepositoryResult<BudgetProfile>> {
+        const model: BudgetProfile = {
+            Id: guid(),
+            email: t.email,
+            allocations: t.allocations,
+            monthlyIncome: t.monthlyIncome
+        };
         const params = {
             TableName: this.tableName,
-            Item: t
+            Item: model
         };
         try {
-            var res = await this.dbClient.put(params).promise();
-            console.log(JSON.stringify(res));
+            await this.dbClient.put(params).promise();
             return {
-                result: t
+                result: model
             } as RepositoryResult<BudgetProfile>;
         } catch (err) {
-            console.log('Failed to save', err.message);
             return {
                 result: null,
                 error: RepositoryFailureStatus.Error
@@ -73,5 +77,3 @@ class BudgetProfileRepository extends BaseRepository implements IBudgetProfileRe
         }
     }
 }
-
-export default BudgetProfileRepository;
