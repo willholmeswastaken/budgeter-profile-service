@@ -1,54 +1,69 @@
-import { Body, Get, JsonController, OnNull, Post, QueryParam} from "routing-controllers";
-import RepositoryFailureStatus from '../models/Enums/RepositoryFailureStatus';
+import { Body, Get, JsonController, OnNull, Post, QueryParam } from "routing-controllers";
+import Joi from "joi";
+
 import { BudgetProfileRepository } from '../services';
+import { nameof } from "../utils";
+
+import RepositoryFailureStatus from '../models/Enums/RepositoryFailureStatus';
 import { BudgetProfileNotFoundError, BudgetProfileCreationError, BudgetProfileCreationValidationError } from '../models/HttpErrors';
 import BudgetProfileCreationRequestModel from '../models/HttpRequests/BudgetProfileCreationRequestModel';
 import BudgetProfileResponse from '../models/HttpResponses/BudgetProfileResponse';
 import RecordNotFoundException from '../models/Exceptions/RecordNotFoundException';
-import BudgetProfileValidator from "../services/BudgetProfileValidator";
+import { InvalidRequestDataException } from "../models/HttpErrors/InvalidRequestDataException";
+import BudgetProfileSchema from "../schemas/BudgetProfileCreationRequestModelSchema";
 
 
-@JsonController()
+@JsonController("/budgetProfile")
 class BudgetController {
-  constructor(private budgetProfileRepository: BudgetProfileRepository, private budgetProfileValidator: BudgetProfileValidator) {}
+  constructor(private budgetProfileRepository: BudgetProfileRepository) { }
 
-  @Get("/budgetProfile")
+  @Get("/")
   @OnNull(BudgetProfileNotFoundError)
-  public async index(@QueryParam('email') email: string) {
-    return await this.budgetProfileRepository.getProfileByEmail(email);
+  public async index(@QueryParam('email') incomingEmail: string): Promise<BudgetProfileResponse> {
+    const { error } = await Joi.string().required().email().validateAsync(incomingEmail);
+    if(error !== undefined) throw new InvalidRequestDataException(nameof(incomingEmail).toString(), error.ValidationError);
+
+    const returnedRecord = await this.budgetProfileRepository.getProfileByEmail(incomingEmail);
+    if (returnedRecord === null) return returnedRecord;
+
+    const { email, allocations, monthlyIncome } = returnedRecord;
+    return {
+      email,
+      allocations,
+      monthlyIncome
+    };
   }
 
-  @Post("/budgetProfile")
-  public async create(@Body() budgetProfileCreationReq: BudgetProfileCreationRequestModel) {
-    if(!this.budgetProfileValidator.isValid(budgetProfileCreationReq)) throw new BudgetProfileCreationValidationError();
+  @Post("/")
+  public async create(@Body() budgetProfileCreationReq: BudgetProfileCreationRequestModel): Promise<BudgetProfileResponse> {
+    const { error } = await BudgetProfileSchema.validateAsync(budgetProfileCreationReq);
+    if (error !== undefined) throw new BudgetProfileCreationValidationError(error.ValidationError);
+
     try {
       const existingRecord = await this.budgetProfileRepository.getProfileByEmail(budgetProfileCreationReq.email);
       if (existingRecord !== null) {
+        const { email, allocations, monthlyIncome } = existingRecord;
         return {
-          email: existingRecord.email,
-          allocations: existingRecord.allocations,
-          monthlyIncome: existingRecord.monthlyIncome
-        } as BudgetProfileResponse;
+          email,
+          allocations,
+          monthlyIncome
+        };
       }
     } catch (e) {
       if (!(e instanceof RecordNotFoundException)) {
         throw e;
       }
     }
+
     const createResponse = await this.budgetProfileRepository.create(budgetProfileCreationReq);
-    switch (createResponse.error) {
-      case RepositoryFailureStatus.Validation:
-        throw new BudgetProfileCreationValidationError();
-      case RepositoryFailureStatus.Error:
-        throw new BudgetProfileCreationError();
-      default:
-        break;
-    }
+    if(createResponse.error === RepositoryFailureStatus.Error) throw new BudgetProfileCreationError();
+    
+    const { email, allocations, monthlyIncome } = createResponse.result;
     return {
-      email: createResponse.result.email,
-      allocations: createResponse.result.allocations,
-      monthlyIncome: createResponse.result.monthlyIncome
-    } as BudgetProfileResponse;
+      email,
+      allocations,
+      monthlyIncome
+    };
   }
 }
 

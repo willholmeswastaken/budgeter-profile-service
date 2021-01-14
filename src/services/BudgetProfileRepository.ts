@@ -68,13 +68,14 @@ export class BudgetProfileRepository extends BaseRepository implements IBudgetPr
         try {
             await this.dbClient.put(params).promise();
             return {
-                result: model
-            } as RepositoryResult<BudgetProfile>;
+                result: model,
+                error: RepositoryFailureStatus.None
+            };
         } catch (err) {
             return {
                 result: null,
                 error: RepositoryFailureStatus.Error
-            } as RepositoryResult<BudgetProfile>;
+            };
         }
     }
 }
