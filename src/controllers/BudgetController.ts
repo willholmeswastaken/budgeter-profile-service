@@ -1,8 +1,8 @@
 import { Body, Get, JsonController, OnNull, Post, QueryParam } from "routing-controllers";
 import Joi from "joi";
+import { nameof } from "ts-simple-nameof";
 
 import { BudgetProfileRepository } from '../services';
-import { nameof } from "../utils";
 
 import RepositoryFailureStatus from '../models/Enums/RepositoryFailureStatus';
 import { BudgetProfileNotFoundError, BudgetProfileCreationError, BudgetProfileCreationValidationError } from '../models/HttpErrors';
@@ -21,7 +21,7 @@ class BudgetController {
   @OnNull(BudgetProfileNotFoundError)
   public async index(@QueryParam('email') incomingEmail: string): Promise<IBudgetProfileResponse> {
     const { error } = await Joi.string().required().email().validateAsync(incomingEmail);
-    if(error !== undefined) throw new InvalidRequestDataException(nameof(incomingEmail).toString(), error.ValidationError);
+    if(error !== undefined) throw new InvalidRequestDataException(nameof<String>(email => email).toString(), error.ValidationError);
 
     const returnedRecord = await this.budgetProfileRepository.getProfileByEmail(incomingEmail);
     if (returnedRecord === null) return returnedRecord;

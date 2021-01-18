@@ -1,15 +1,17 @@
 import AWS from "aws-sdk";
 import { DocumentClient } from "aws-sdk/clients/dynamodb";
-import awsConfig from '../config/awsConfig';
+import AWSConfig from '../config/AWSConfig';
 import IRepository from "./IRepository";
 import IRepositoryResult from "../interfaces/models/IRepositoryResult";
 
-export abstract class BaseRepository<T> implements IRepository<T> {
+export abstract class DynamoRepository<T> implements IRepository<T> {
     dbClient: DocumentClient;
 
-    constructor() {
-        AWS.config.update(awsConfig);
-        this.dbClient = new DocumentClient();
+    constructor(overrideDbClient?: DocumentClient) {
+        AWS.config.update(AWSConfig);
+        this.dbClient = overrideDbClient
+            ? overrideDbClient
+            : new DocumentClient();
     }
 
     abstract tableName: string;
@@ -20,4 +22,4 @@ export abstract class BaseRepository<T> implements IRepository<T> {
     abstract update(t: T): Promise<boolean>;
 }
 
-export default BaseRepository;
+export default DynamoRepository;

@@ -2,7 +2,7 @@ import { Service } from "typedi";
 import { v4 as guid } from 'uuid';
 import IBudgetProfileRepository from "../interfaces/services/IBudgetProfileRepository";
 
-import { BaseRepository } from "../data/BaseRepository";
+import { DynamoRepository } from "../data/DynamoRepository";
 
 import RecordNotFoundException from '../models/Exceptions/RecordNotFoundException';
 import LogEventNames from '../models/LogEventNames';
@@ -12,7 +12,7 @@ import RepositoryFailureStatus from '../models/Enums/RepositoryFailureStatus';
 import IBudgetProfileCreationRequestModel from "../interfaces/models/HttpRequests/IBudgetProfileCreationRequestModel";
 
 @Service()
-export class BudgetProfileRepository extends BaseRepository<IBudgetProfile> implements IBudgetProfileRepository {
+export class BudgetProfileRepository extends DynamoRepository<IBudgetProfile> implements IBudgetProfileRepository {
     tableName: string;
 
     constructor() {
