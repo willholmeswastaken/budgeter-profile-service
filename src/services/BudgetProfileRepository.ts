@@ -1,65 +1,66 @@
 import { Service } from "typedi";
 import { v4 as guid } from 'uuid';
-import IBudgetProfileRepository from "./IBudgetProfileRepository";
+import { Logger } from "tslog";
 
-import { BaseRepository } from "../data/BaseRepository";
+import IBudgetProfileRepository from "../interfaces/services/IBudgetProfileRepository";
+import IRepositoryResult from '../interfaces/models/IRepositoryResult';
+import IBudgetProfileCreationRequestModel from "../interfaces/models/HttpRequests/IBudgetProfileCreationRequestModel";
+import IBudgetProfile from "../interfaces/models/IBudgetProfile";
 
-import RecordNotFoundException from '../models/Exceptions/RecordNotFoundException';
+import { DynamoRepository } from "../data/DynamoRepository";
 import LogEventNames from '../models/LogEventNames';
-import BudgetProfile from "../models/BudgetProfile";
-import RepositoryResult from '../models/RepositoryResult';
 import RepositoryFailureStatus from '../models/Enums/RepositoryFailureStatus';
-import BudgetProfileCreationRequestModel from "../models/HttpRequests/BudgetProfileCreationRequestModel";
 
 @Service()
-export class BudgetProfileRepository extends BaseRepository implements IBudgetProfileRepository {
+export class BudgetProfileRepository extends DynamoRepository<IBudgetProfile> implements IBudgetProfileRepository {
     tableName: string;
+    logger: Logger;
 
-    constructor() {
-        super();
+    constructor(preventAwsConfigStartup: boolean = false) {
+        super(preventAwsConfigStartup);
         this.tableName = 'budgeter-user-profile';
+        this.logger = new Logger();
     }
 
-    async getProfileByEmail(email: string): Promise<BudgetProfile> {
+    async getProfileByEmail(email: string): Promise<IBudgetProfile> {
         const params = {
             TableName: this.tableName,
             IndexName: 'email-index',
             KeyConditionExpression: 'email = :email',
-            ExpressionAttributeValues: { ':email': email} 
+            ExpressionAttributeValues: { ':email': email }
         };
 
         try {
             const data = await (await this.dbClient.query(params).promise()).Items;
-            if(data.length > 0) {
-                return <BudgetProfile>data[0];
-            } else {
-                console.log(LogEventNames.RecordNotFound);
-                throw new RecordNotFoundException(email);
+            if (data.length > 0) {
+                return <IBudgetProfile>data[0];
             }
+            this.logger.info(LogEventNames.RecordNotFound, email);
         } catch (err) {
-            console.error(LogEventNames.RecordSearchFailure, err);
-            return null;
+            this.logger.error(LogEventNames.RecordSearchFailure, err)
         }
+        return null;
     }
-    exists(t: BudgetProfile): Promise<boolean> {
+    exists(t: IBudgetProfile): Promise<boolean> {
         throw new Error("Method not implemented.");
     }
-    delete(t: BudgetProfile): Promise<any> {
+    delete(t: IBudgetProfile): Promise<any> {
         throw new Error("Method not implemented.");
     }
-    getById(id: string): Promise<BudgetProfile> {
+    getById(id: string): Promise<IBudgetProfile> {
         throw new Error("Method not implemented.");
     }
-    update(t: BudgetProfile): Promise<boolean> {
+    update(t: IBudgetProfile): Promise<boolean> {
         throw new Error('Method not implemented.');
     }
-    async create(t: BudgetProfileCreationRequestModel): Promise<RepositoryResult<BudgetProfile>> {
-        const model: BudgetProfile = {
+    async create(t: IBudgetProfileCreationRequestModel): Promise<IRepositoryResult<IBudgetProfile>> {
+        const model: IBudgetProfile = {
             Id: guid(),
             email: t.email,
             allocations: t.allocations,
             monthlyIncome: t.monthlyIncome
         };
+        
         const params = {
             TableName: this.tableName,
             Item: model
@@ -72,6 +73,7 @@ export class BudgetProfileRepository extends BaseRepository implements IBudgetPr
                 error: RepositoryFailureStatus.None
             };
         } catch (err) {
+            this.logger.error(LogEventNames.RecordFailedToSave, err);
             return {
                 result: null,
                 error: RepositoryFailureStatus.Error

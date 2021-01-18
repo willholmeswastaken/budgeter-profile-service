@@ -1,14 +1,14 @@
-import Allocations from "./Allocations";
+import IAllocations from "./IAllocations";
 // import { FinanceAccount } from "./FinanceAccount";
 
-export interface BudgetProfile {
+export interface IBudgetProfile {
     Id: string;
     email: string;
     monthlyIncome: number;
-    allocations: Allocations;
+    allocations: IAllocations;
     
     //TODO: Bring in the below functionality
     // accounts: FinanceAccount[];
 }
 
-export default BudgetProfile;
+export default IBudgetProfile;

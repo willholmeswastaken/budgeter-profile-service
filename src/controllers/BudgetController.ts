@@ -2,12 +2,11 @@ import { Body, Get, JsonController, OnNull, Post, QueryParam } from "routing-con
 import Joi from "joi";
 
 import { BudgetProfileRepository } from '../services';
-import { nameof } from "../utils";
 
 import RepositoryFailureStatus from '../models/Enums/RepositoryFailureStatus';
 import { BudgetProfileNotFoundError, BudgetProfileCreationError, BudgetProfileCreationValidationError } from '../models/HttpErrors';
-import BudgetProfileCreationRequestModel from '../models/HttpRequests/BudgetProfileCreationRequestModel';
-import BudgetProfileResponse from '../models/HttpResponses/BudgetProfileResponse';
+import IBudgetProfileCreationRequestModel from '../interfaces/models/HttpRequests/IBudgetProfileCreationRequestModel';
+import IBudgetProfileResponse from '../interfaces/models/HttpResponses/IBudgetProfileResponse';
 import RecordNotFoundException from '../models/Exceptions/RecordNotFoundException';
 import { InvalidRequestDataException } from "../models/HttpErrors/InvalidRequestDataException";
 import BudgetProfileSchema from "../schemas/BudgetProfileCreationRequestModelSchema";
@@ -19,9 +18,9 @@ class BudgetController {
 
   @Get("/")
   @OnNull(BudgetProfileNotFoundError)
-  public async index(@QueryParam('email') incomingEmail: string): Promise<BudgetProfileResponse> {
+  public async index(@QueryParam('email') incomingEmail: string): Promise<IBudgetProfileResponse> {
     const { error } = await Joi.string().required().email().validateAsync(incomingEmail);
-    if(error !== undefined) throw new InvalidRequestDataException(nameof(incomingEmail).toString(), error.ValidationError);
+    if(error !== undefined) throw new InvalidRequestDataException('email', error.ValidationError);
 
     const returnedRecord = await this.budgetProfileRepository.getProfileByEmail(incomingEmail);
     if (returnedRecord === null) return returnedRecord;
@@ -35,7 +34,7 @@ class BudgetController {
   }
 
   @Post("/")
-  public async create(@Body() budgetProfileCreationReq: BudgetProfileCreationRequestModel): Promise<BudgetProfileResponse> {
+  public async create(@Body() budgetProfileCreationReq: IBudgetProfileCreationRequestModel): Promise<IBudgetProfileResponse> {
     const { error } = await BudgetProfileSchema.validateAsync(budgetProfileCreationReq);
     if (error !== undefined) throw new BudgetProfileCreationValidationError(error.ValidationError);
 
