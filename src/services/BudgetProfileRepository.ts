@@ -1,18 +1,18 @@
 import { Service } from "typedi";
 import { v4 as guid } from 'uuid';
-import IBudgetProfileRepository from "./IBudgetProfileRepository";
+import IBudgetProfileRepository from "../interfaces/services/IBudgetProfileRepository";
 
 import { BaseRepository } from "../data/BaseRepository";
 
 import RecordNotFoundException from '../models/Exceptions/RecordNotFoundException';
 import LogEventNames from '../models/LogEventNames';
-import BudgetProfile from "../models/BudgetProfile";
-import RepositoryResult from '../models/RepositoryResult';
+import IBudgetProfile from "../interfaces/models/IBudgetProfile";
+import IRepositoryResult from '../interfaces/models/IRepositoryResult';
 import RepositoryFailureStatus from '../models/Enums/RepositoryFailureStatus';
-import BudgetProfileCreationRequestModel from "../models/HttpRequests/BudgetProfileCreationRequestModel";
+import IBudgetProfileCreationRequestModel from "../interfaces/models/HttpRequests/IBudgetProfileCreationRequestModel";
 
 @Service()
-export class BudgetProfileRepository extends BaseRepository implements IBudgetProfileRepository {
+export class BudgetProfileRepository extends BaseRepository<IBudgetProfile> implements IBudgetProfileRepository {
     tableName: string;
 
     constructor() {
@@ -20,7 +20,7 @@ export class BudgetProfileRepository extends BaseRepository implements IBudgetPr
         this.tableName = 'budgeter-user-profile';
     }
 
-    async getProfileByEmail(email: string): Promise<BudgetProfile> {
+    async getProfileByEmail(email: string): Promise<IBudgetProfile> {
         const params = {
             TableName: this.tableName,
             IndexName: 'email-index',
@@ -31,7 +31,7 @@ export class BudgetProfileRepository extends BaseRepository implements IBudgetPr
         try {
             const data = await (await this.dbClient.query(params).promise()).Items;
             if(data.length > 0) {
-                return <BudgetProfile>data[0];
+                return <IBudgetProfile>data[0];
             } else {
                 console.log(LogEventNames.RecordNotFound);
                 throw new RecordNotFoundException(email);
@@ -41,20 +41,20 @@ export class BudgetProfileRepository extends BaseRepository implements IBudgetPr
             return null;
         }
     }
-    exists(t: BudgetProfile): Promise<boolean> {
+    exists(t: IBudgetProfile): Promise<boolean> {
         throw new Error("Method not implemented.");
     }
-    delete(t: BudgetProfile): Promise<any> {
+    delete(t: IBudgetProfile): Promise<any> {
         throw new Error("Method not implemented.");
     }
-    getById(id: string): Promise<BudgetProfile> {
+    getById(id: string): Promise<IBudgetProfile> {
         throw new Error("Method not implemented.");
     }
-    update(t: BudgetProfile): Promise<boolean> {
+    update(t: IBudgetProfile): Promise<boolean> {
         throw new Error('Method not implemented.');
     }
-    async create(t: BudgetProfileCreationRequestModel): Promise<RepositoryResult<BudgetProfile>> {
-        const model: BudgetProfile = {
+    async create(t: IBudgetProfileCreationRequestModel): Promise<IRepositoryResult<IBudgetProfile>> {
+        const model: IBudgetProfile = {
             Id: guid(),
             email: t.email,
             allocations: t.allocations,

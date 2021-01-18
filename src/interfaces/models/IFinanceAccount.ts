@@ -1,7 +1,7 @@
-interface FinanceAccount {
+interface IFinanceAccount {
     name: string;
     balance: number;
     type: string
 }
 
-export default FinanceAccount;
+export default IFinanceAccount;

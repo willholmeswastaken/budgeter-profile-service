@@ -1,7 +1,7 @@
 import { SavingsAccountType } from "./Constants";
-import FinanceAccount from "./FinanceAccount";
+import IFinanceAccount from "../interfaces/models/IFinanceAccount";
 
-class SavingsAccount implements FinanceAccount {
+class SavingsAccount implements IFinanceAccount {
     name: string;
     balance: number;
     type: string = SavingsAccountType;
