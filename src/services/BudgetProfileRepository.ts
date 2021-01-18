@@ -1,23 +1,25 @@
 import { Service } from "typedi";
 import { v4 as guid } from 'uuid';
+import { Logger } from "tslog";
+
 import IBudgetProfileRepository from "../interfaces/services/IBudgetProfileRepository";
+import IRepositoryResult from '../interfaces/models/IRepositoryResult';
+import IBudgetProfileCreationRequestModel from "../interfaces/models/HttpRequests/IBudgetProfileCreationRequestModel";
+import IBudgetProfile from "../interfaces/models/IBudgetProfile";
 
 import { DynamoRepository } from "../data/DynamoRepository";
-
-import RecordNotFoundException from '../models/Exceptions/RecordNotFoundException';
 import LogEventNames from '../models/LogEventNames';
-import IBudgetProfile from "../interfaces/models/IBudgetProfile";
-import IRepositoryResult from '../interfaces/models/IRepositoryResult';
 import RepositoryFailureStatus from '../models/Enums/RepositoryFailureStatus';
-import IBudgetProfileCreationRequestModel from "../interfaces/models/HttpRequests/IBudgetProfileCreationRequestModel";
 
 @Service()
 export class BudgetProfileRepository extends DynamoRepository<IBudgetProfile> implements IBudgetProfileRepository {
     tableName: string;
+    logger: Logger;
 
-    constructor() {
-        super();
+    constructor(preventAwsConfigStartup: boolean = false) {
+        super(preventAwsConfigStartup);
         this.tableName = 'budgeter-user-profile';
+        this.logger = new Logger();
     }
 
     async getProfileByEmail(email: string): Promise<IBudgetProfile> {
@@ -25,21 +27,19 @@ export class BudgetProfileRepository extends DynamoRepository<IBudgetProfile> im
             TableName: this.tableName,
             IndexName: 'email-index',
             KeyConditionExpression: 'email = :email',
-            ExpressionAttributeValues: { ':email': email} 
+            ExpressionAttributeValues: { ':email': email }
         };
 
         try {
             const data = await (await this.dbClient.query(params).promise()).Items;
-            if(data.length > 0) {
+            if (data.length > 0) {
                 return <IBudgetProfile>data[0];
-            } else {
-                console.log(LogEventNames.RecordNotFound);
-                throw new RecordNotFoundException(email);
             }
+            this.logger.info(LogEventNames.RecordNotFound, email);
         } catch (err) {
-            console.error(LogEventNames.RecordSearchFailure, err);
-            return null;
+            this.logger.error(LogEventNames.RecordSearchFailure, err)
         }
+        return null;
     }
     exists(t: IBudgetProfile): Promise<boolean> {
         throw new Error("Method not implemented.");
@@ -60,6 +60,7 @@ export class BudgetProfileRepository extends DynamoRepository<IBudgetProfile> im
             allocations: t.allocations,
             monthlyIncome: t.monthlyIncome
         };
+        
         const params = {
             TableName: this.tableName,
             Item: model
@@ -72,6 +73,7 @@ export class BudgetProfileRepository extends DynamoRepository<IBudgetProfile> im
                 error: RepositoryFailureStatus.None
             };
         } catch (err) {
+            this.logger.error(LogEventNames.RecordFailedToSave, err);
             return {
                 result: null,
                 error: RepositoryFailureStatus.Error

@@ -7,11 +7,9 @@ import IRepositoryResult from "../interfaces/models/IRepositoryResult";
 export abstract class DynamoRepository<T> implements IRepository<T> {
     dbClient: DocumentClient;
 
-    constructor(overrideDbClient?: DocumentClient) {
-        AWS.config.update(AWSConfig);
-        this.dbClient = overrideDbClient
-            ? overrideDbClient
-            : new DocumentClient();
+    constructor(preventAwsConfigStartup: boolean) {
+        if(!preventAwsConfigStartup) AWS.config.update(AWSConfig);
+        this.dbClient = new DocumentClient();
     }
 
     abstract tableName: string;
