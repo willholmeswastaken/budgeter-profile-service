@@ -97,4 +97,18 @@ describe('BudgetProfileCreationRequestModelSchema tests', () => {
             });
         });
     });
+
+    describe('password', () => {
+        describe.each([
+            [null, 'must be a string'],
+            ['', 'is not allowed to be empty'],
+            ['willholmes', 'with value \"willholmes\" fails to match the required pattern: /^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$%^&*])(?=.{8,})/']
+        ])('when email is = %s', (val, validationErr) => {
+            it('returns an error', () => {
+                const data = setupTestData({ password: val });
+                const { error } = schema.validate(data); 
+                expect(error.details[0].message).toEqual(`"password" ${validationErr}`);
+            });
+        });
+    });
 });

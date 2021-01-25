@@ -110,10 +110,14 @@ describe("BudgetProfileRepository tests", () => {
     });
   });
 
+  describe('authenticateUser', () => {
+      //todo: write tests pls...
+  })
+
   describe("create", () => {
     let encryptedPassword: string;
     const password: string = "testing";
-    
+
     beforeAll(async () => {
       encryptedPassword = await bcrypt.hash(password, saltRounds);
     });

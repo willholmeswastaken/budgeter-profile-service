@@ -33,6 +33,8 @@ class BudgetController {
     };
   }
 
+  //todo: write endpoint to authenticate
+
   @Post("/")
   public async create(@Body() budgetProfileCreationReq: IBudgetProfileCreationRequestModel): Promise<IBudgetProfileResponse> {
     const { error } = await BudgetProfileSchema.validateAsync(budgetProfileCreationReq);
