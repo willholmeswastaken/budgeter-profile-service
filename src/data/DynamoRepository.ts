@@ -1,6 +1,6 @@
 import AWS from "aws-sdk";
 import { DocumentClient } from "aws-sdk/clients/dynamodb";
-import AWSConfig from '../config/AWSConfig';
+import AWSConfig from '../config/awsConfig';
 import IRepository from "./IRepository";
 import IRepositoryResult from "../interfaces/models/IRepositoryResult";
 

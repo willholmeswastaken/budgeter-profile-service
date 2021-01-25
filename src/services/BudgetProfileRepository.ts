@@ -1,6 +1,7 @@
 import { Service } from "typedi";
 import { v4 as guid } from 'uuid';
 import { Logger } from "tslog";
+import bcrypt from 'bcrypt';
 
 import IBudgetProfileRepository from "../interfaces/services/IBudgetProfileRepository";
 import IRepositoryResult from '../interfaces/models/IRepositoryResult';
@@ -57,6 +58,7 @@ export class BudgetProfileRepository extends DynamoRepository<IBudgetProfile> im
         const model: IBudgetProfile = {
             Id: guid(),
             email: t.email,
+            password: await bcrypt.hash(t.password, parseInt(process.env.PASSWORD_SALT_ROUNDS)),
             allocations: t.allocations,
             monthlyIncome: t.monthlyIncome
         };

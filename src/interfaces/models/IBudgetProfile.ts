@@ -4,6 +4,7 @@ import IAllocations from "./IAllocations";
 export interface IBudgetProfile {
     Id: string;
     email: string;
+    password: string;
     monthlyIncome: number;
     allocations: IAllocations;
     

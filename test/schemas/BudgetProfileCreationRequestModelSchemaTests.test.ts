@@ -11,6 +11,7 @@ describe('BudgetProfileCreationRequestModelSchema tests', () => {
             savings: 1000
         },
         email: 'will@willholmes.dev',
+        password: 'Password123!',
         ...propOverrides
     });
 
