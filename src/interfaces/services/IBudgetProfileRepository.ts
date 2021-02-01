@@ -1,10 +1,9 @@
 import { Logger } from "tslog";
 import { IBudgetProfile } from "../models/IBudgetProfile";
+import { ICreate, IGetById } from '../../data/actions';
 
-export interface IBudgetProfileRepository {
+export interface IBudgetProfileRepository extends ICreate<IBudgetProfile>, IGetById<IBudgetProfile> {
   logger: Logger;
-  getProfileByEmail(email: string): Promise<IBudgetProfile>;
-  authenticateUser(email: string, password: string): Promise<IBudgetProfile>;
 }
 
 export default IBudgetProfileRepository;

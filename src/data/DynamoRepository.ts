@@ -13,11 +13,6 @@ export abstract class DynamoRepository<T> implements IRepository<T> {
     }
 
     abstract tableName: string;
-    abstract exists(t: T): Promise<boolean>;
-    abstract delete(t: T): Promise<any>;
-    abstract getById(id: string): Promise<T>;
-    abstract create(t: any): Promise<IRepositoryResult<T>>;
-    abstract update(t: T): Promise<boolean>;
 }
 
 export default DynamoRepository;
