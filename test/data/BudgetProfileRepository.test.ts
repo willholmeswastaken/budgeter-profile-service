@@ -3,9 +3,10 @@ import * as AWS from "aws-sdk";
 import { GetItemInput, PutItemInput } from "aws-sdk/clients/dynamodb";
 import bcrypt from "bcrypt";
 
-import { BudgetProfileRepository } from "../../src/services/BudgetProfileRepository";
+import { BudgetProfileRepository } from "../../src/data/repositories";
 import IBudgetProfile from "../../src/interfaces/models/IBudgetProfile";
 import RepositoryFailureStatus from "../../src/models/Enums/RepositoryFailureStatus";
+import RecordNotFoundException from "../../src/models/Exceptions/RecordNotFoundException";
 
 const mockInfo = jest.fn();
 const mockError = jest.fn();
@@ -55,8 +56,8 @@ describe("BudgetProfileRepository tests", () => {
     expect(repo.tableName).toBe("budgeter-user-profile");
   });
 
-  describe("getProfileByEmail", () => {
-    it("gets profile by email address on valid query", async () => {
+  describe("getById", () => {
+    it("succeeds on valid query", async () => {
       AWSMock.setSDKInstance(AWS);
       AWSMock.mock(
         "DynamoDB.DocumentClient",
@@ -66,7 +67,7 @@ describe("BudgetProfileRepository tests", () => {
       );
       repo = new BudgetProfileRepository(true);
 
-      const res = await repo.getProfileByEmail(sampleProfile.email);
+      const res = await repo.getById(sampleProfile.email);
 
       expect(res).not.toBeNull();
       expect(res).toEqual(sampleProfile);
@@ -82,7 +83,9 @@ describe("BudgetProfileRepository tests", () => {
       );
       repo = new BudgetProfileRepository(true);
 
-      expect(await repo.getProfileByEmail(sampleProfile.email)).toBeNull();
+      await expect(repo.getById(sampleProfile.email)).rejects.toThrow(
+        RecordNotFoundException
+      );
       expect(mockInfo).toHaveBeenCalledTimes(1);
       expect(mockInfo).toHaveBeenCalledWith(
         "Record_Not_Found",
@@ -101,7 +104,9 @@ describe("BudgetProfileRepository tests", () => {
       );
       repo = new BudgetProfileRepository(true);
 
-      expect(await repo.getProfileByEmail(sampleProfile.email)).toBeNull();
+      await expect(repo.getById(sampleProfile.email)).rejects.toThrow(
+        RecordNotFoundException
+      );
       expect(mockError).toHaveBeenCalledTimes(1);
       expect(mockError).toHaveBeenCalledWith(
         "Record_Search_Failure",
@@ -109,10 +114,6 @@ describe("BudgetProfileRepository tests", () => {
       );
     });
   });
-
-  describe('authenticateUser', () => {
-      //todo: write tests pls...
-  })
 
   describe("create", () => {
     let encryptedPassword: string;
@@ -135,7 +136,11 @@ describe("BudgetProfileRepository tests", () => {
 
       expect(res).not.toBeNull();
       expect(res).toEqual({
-        result: { ...sampleProfile, Id: res.result.Id, password: res.result.password },
+        result: {
+          ...sampleProfile,
+          Id: res.result.Id,
+          password: res.result.password,
+        },
         error: RepositoryFailureStatus.None,
       });
     });
@@ -159,37 +164,5 @@ describe("BudgetProfileRepository tests", () => {
         error: RepositoryFailureStatus.Error,
       });
     });
-  });
-
-  it("throws on exists", () => {
-    try {
-      repo.exists({} as IBudgetProfile);
-    } catch (err) {
-      expect(err.message).toBe("Method not implemented.");
-    }
-  });
-
-  it("throws on delete", () => {
-    try {
-      repo.delete({} as IBudgetProfile);
-    } catch (err) {
-      expect(err.message).toBe("Method not implemented.");
-    }
-  });
-
-  it("throws on getById", () => {
-    try {
-      repo.getById("test");
-    } catch (err) {
-      expect(err.message).toBe("Method not implemented.");
-    }
-  });
-
-  it("throws on update", () => {
-    try {
-      repo.update({} as IBudgetProfile);
-    } catch (err) {
-      expect(err.message).toBe("Method not implemented.");
-    }
   });
 });

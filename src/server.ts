@@ -9,6 +9,8 @@ import { useExpressServer, useContainer } from 'routing-controllers';
 import { Container } from 'typedi';
 
 import './services';
+import './data/repositories';
+
 useContainer(Container);
 
 const app = express();

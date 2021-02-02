@@ -1,4 +1,4 @@
-import IAllocations from "../IAllocations";
+import IAllocations from "./IAllocations";
 
 interface IBudgetProfileResponse {
     email: string;

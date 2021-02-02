@@ -1,4 +1,4 @@
-import IRepositoryResult from "../../interfaces/models/IRepositoryResult";
+import IRepositoryResult from "../models/IRepositoryResult";
 
 export interface ICreate<T> {
     create(t: any): Promise<IRepositoryResult<T>>;
