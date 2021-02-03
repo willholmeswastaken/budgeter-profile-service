@@ -23,7 +23,6 @@ export class UserAuthenticationService implements IUserAuthenticationService {
     password: string
   ): Promise<IBudgetProfileResponse> {
     const user = await this.repository.getById(email);
-    console.log(user);
     if (await bcrypt.compare(password, user.password)) return user;
     throw new AuthenticationFailureException(email, "Invalid password!");
   }
