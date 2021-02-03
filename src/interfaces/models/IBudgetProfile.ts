@@ -1,4 +1,4 @@
-import IAllocations from "./IAllocations";
+import { IAllocations } from "./";
 // import { FinanceAccount } from "./FinanceAccount";
 
 export interface IBudgetProfile {
@@ -10,6 +10,6 @@ export interface IBudgetProfile {
     
     //TODO: Bring in the below functionality
     // accounts: FinanceAccount[];
-}
+};
 
 export default IBudgetProfile;

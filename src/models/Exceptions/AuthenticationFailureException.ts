@@ -1,4 +1,4 @@
-class AuthenticationFailureException extends Error {
+export class AuthenticationFailureException extends Error {
     public email: string;
     public reason: string;
 
@@ -7,6 +7,4 @@ class AuthenticationFailureException extends Error {
         this.name = 'FailedToAuthenticateUserException';
         this.reason = reason;
     }
-}
-
-export default AuthenticationFailureException;
+};

@@ -9,6 +9,8 @@ import { useExpressServer, useContainer } from 'routing-controllers';
 import { Container } from 'typedi';
 
 import './services';
+import './data/repositories';
+
 useContainer(Container);
 
 const app = express();
@@ -21,7 +23,7 @@ const port = process.env.PORT || '8000';
 
 useExpressServer(app, {
     routePrefix: '/api',
-    controllers: [ __dirname + "/api/*.ts" ]
+    controllers: [ __dirname + "/controllers/*.ts" ]
 })
 
 app.listen(port);

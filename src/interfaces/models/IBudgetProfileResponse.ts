@@ -1,6 +1,6 @@
-import IAllocations from "../IAllocations";
+import { IAllocations } from "./";
 
-interface IBudgetProfileResponse {
+export interface IBudgetProfileResponse {
     email: string;
     monthlyIncome: number;
     allocations: IAllocations;

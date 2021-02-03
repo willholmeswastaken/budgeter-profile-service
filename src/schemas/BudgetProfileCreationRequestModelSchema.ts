@@ -1,6 +1,6 @@
 import Joi from "joi";
 
-const schema = Joi.object({
+export const BudgetProfileCreationRequestModelSchema = Joi.object({
   monthlyIncome: Joi.number().required().integer().min(0),
 
   allocations: Joi.object({
@@ -16,4 +16,4 @@ const schema = Joi.object({
     .required(),
 });
 
-export default schema;
+export default BudgetProfileCreationRequestModelSchema;

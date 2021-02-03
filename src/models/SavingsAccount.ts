@@ -1,15 +1,13 @@
-import { SavingsAccountType } from "./Constants";
-import IFinanceAccount from "../interfaces/models/IFinanceAccount";
+import { Constants } from ".";
+import { IFinanceAccount } from "../interfaces";
 
-class SavingsAccount implements IFinanceAccount {
+export class SavingsAccount implements IFinanceAccount {
     name: string;
     balance: number;
-    type: string = SavingsAccountType;
+    type: string = Constants.SavingsAccountType;
 
     constructor(name: string, balance: number) {
         this.name = name;
         this.balance = balance;
     }
-}
-
-export default SavingsAccount
+};

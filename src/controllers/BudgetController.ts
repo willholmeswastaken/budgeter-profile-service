@@ -1,70 +1,55 @@
-import { Body, Get, JsonController, OnNull, Post, QueryParam } from "routing-controllers";
 import Joi from "joi";
-
-import { BudgetProfileRepository } from '../services';
-
-import RepositoryFailureStatus from '../models/Enums/RepositoryFailureStatus';
-import { BudgetProfileNotFoundError, BudgetProfileCreationError, BudgetProfileCreationValidationError } from '../models/HttpErrors';
-import IBudgetProfileCreationRequestModel from '../interfaces/models/HttpRequests/IBudgetProfileCreationRequestModel';
-import IBudgetProfileResponse from '../interfaces/models/HttpResponses/IBudgetProfileResponse';
-import RecordNotFoundException from '../models/Exceptions/RecordNotFoundException';
-import { InvalidRequestDataException } from "../models/HttpErrors/InvalidRequestDataException";
+import {
+  Body,
+  Get,
+  JsonController,
+  Post,
+  QueryParam,
+} from "routing-controllers";
+import {
+  BudgetProfileNotFoundError,
+  BudgetProfileCreationValidationError,
+  InvalidRequestDataException,
+} from "../models";
+import { IBudgetProfileCreationRequestModel, IBudgetProfileResponse } from "../interfaces";
+import { BudgetProfileService } from "../services";
 import BudgetProfileSchema from "../schemas/BudgetProfileCreationRequestModelSchema";
-
 
 @JsonController("/budgetProfile")
 class BudgetController {
-  constructor(private budgetProfileRepository: BudgetProfileRepository) { }
+  constructor(private budgetProfileService: BudgetProfileService) {}
 
   @Get("/")
-  @OnNull(BudgetProfileNotFoundError)
-  public async index(@QueryParam('email') incomingEmail: string): Promise<IBudgetProfileResponse> {
-    const { error } = await Joi.string().required().email().validateAsync(incomingEmail);
-    if(error !== undefined) throw new InvalidRequestDataException('email', error.ValidationError);
+  public async index(
+    @QueryParam("email") incomingEmail: string
+  ): Promise<IBudgetProfileResponse> {
+    const { error } = Joi.string()
+      .required()
+      .email()
+      .validate(incomingEmail);
 
-    const returnedRecord = await this.budgetProfileRepository.getProfileByEmail(incomingEmail);
-    if (returnedRecord === null) return returnedRecord;
+    if (error !== undefined)
+      throw new InvalidRequestDataException("email", error);
 
-    const { email, allocations, monthlyIncome } = returnedRecord;
-    return {
-      email,
-      allocations,
-      monthlyIncome
-    };
+    try {
+      return await this.budgetProfileService.getProfileByEmail(incomingEmail);
+    } catch (err) {
+      throw new BudgetProfileNotFoundError();
+    }
   }
 
   //todo: write endpoint to authenticate
 
   @Post("/")
-  public async create(@Body() budgetProfileCreationReq: IBudgetProfileCreationRequestModel): Promise<IBudgetProfileResponse> {
-    const { error } = await BudgetProfileSchema.validateAsync(budgetProfileCreationReq);
-    if (error !== undefined) throw new BudgetProfileCreationValidationError(error.ValidationError);
-
-    try {
-      const existingRecord = await this.budgetProfileRepository.getProfileByEmail(budgetProfileCreationReq.email);
-      if (existingRecord !== null) {
-        const { email, allocations, monthlyIncome } = existingRecord;
-        return {
-          email,
-          allocations,
-          monthlyIncome
-        };
-      }
-    } catch (e) {
-      if (!(e instanceof RecordNotFoundException)) {
-        throw e;
-      }
-    }
-
-    const createResponse = await this.budgetProfileRepository.create(budgetProfileCreationReq);
-    if(createResponse.error === RepositoryFailureStatus.Error) throw new BudgetProfileCreationError();
-    
-    const { email, allocations, monthlyIncome } = createResponse.result;
-    return {
-      email,
-      allocations,
-      monthlyIncome
-    };
+  public async create(
+    @Body() budgetProfileCreationReq: IBudgetProfileCreationRequestModel
+  ): Promise<IBudgetProfileResponse> {
+    const { error } = BudgetProfileSchema.validate(
+      budgetProfileCreationReq
+    );
+    if (error !== undefined)
+      throw new BudgetProfileCreationValidationError(error);
+    return await this.budgetProfileService.createUser(budgetProfileCreationReq);
   }
 }
 

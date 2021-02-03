@@ -1,4 +1,4 @@
-class RecordNotFoundException extends Error {
+export class RecordNotFoundException extends Error {
     public searchIdentifier: string;
 
     constructor(searchIdentifier: string) {
@@ -6,6 +6,4 @@ class RecordNotFoundException extends Error {
         this.name = 'RecordNotFoundException';
         this.searchIdentifier = searchIdentifier;
     }
-}
-
-export default RecordNotFoundException;
+};
