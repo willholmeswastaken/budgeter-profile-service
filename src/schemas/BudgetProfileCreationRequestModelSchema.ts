@@ -1,4 +1,5 @@
 import Joi from "joi";
+import { Constants } from "../models";
 
 export const BudgetProfileCreationRequestModelSchema = Joi.object({
   monthlyIncome: Joi.number().required().integer().min(0),
@@ -12,7 +13,7 @@ export const BudgetProfileCreationRequestModelSchema = Joi.object({
   email: Joi.string().required().email({ minDomainSegments: 2 }),
 
   password: Joi.string()
-    .regex(new RegExp('^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$%^&*])(?=.{8,})'))
+    .regex(new RegExp(Constants.PasswordRegEx))
     .required(),
 });
 

@@ -1,12 +1,10 @@
 import { Service } from "typedi";
-import bcrypt from "bcrypt";
 
 import { IBudgetProfileService, IBudgetProfileResponse, IBudgetProfileCreationRequestModel } from "../interfaces";
 import { BudgetProfileRepository } from "../data";
 import {
   RepositoryFailureStatus,
   RecordNotFoundException,
-  AuthenticationFailureException,
   BudgetProfileCreationError
 } from "../models";
 
@@ -43,13 +41,4 @@ export class BudgetProfileService implements IBudgetProfileService {
   async getProfileByEmail(email: string): Promise<IBudgetProfileResponse> {
     return await this.repository.getById(email);
   }
-
-  async authenticateUser(
-    email: string,
-    password: string
-  ): Promise<IBudgetProfileResponse> {
-    const user = await this.repository.getById(email);
-    if (await bcrypt.compare(password, user.password)) return user;
-    throw new AuthenticationFailureException(email, "Invalid password!");
-  }
-}
+};

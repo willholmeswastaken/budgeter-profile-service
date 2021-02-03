@@ -4,51 +4,56 @@ import {
   Get,
   JsonController,
   Post,
-  QueryParam,
+  Req,
+  UseBefore,
 } from "routing-controllers";
 import {
   BudgetProfileNotFoundError,
-  BudgetProfileCreationValidationError,
+  JoiValidationError,
   InvalidRequestDataException,
+  Context,
 } from "../models";
-import { IBudgetProfileCreationRequestModel, IBudgetProfileResponse } from "../interfaces";
+import {
+  IBudgetProfileCreationRequestModel,
+  IBudgetProfileResponse,
+} from "../interfaces";
 import { BudgetProfileService } from "../services";
 import BudgetProfileSchema from "../schemas/BudgetProfileCreationRequestModelSchema";
+import { AuthMiddleware } from "../middleware";
 
 @JsonController("/budgetProfile")
 class BudgetController {
   constructor(private budgetProfileService: BudgetProfileService) {}
 
   @Get("/")
-  public async index(
-    @QueryParam("email") incomingEmail: string
-  ): Promise<IBudgetProfileResponse> {
-    const { error } = Joi.string()
-      .required()
-      .email()
-      .validate(incomingEmail);
+  @UseBefore(AuthMiddleware)
+  public async index(@Req() req: any): Promise<IBudgetProfileResponse> {
+    const { user } = Context.get(req);
+    const { error } = Joi.string().required().email().validate(user.id);
 
     if (error !== undefined)
       throw new InvalidRequestDataException("email", error);
 
     try {
-      return await this.budgetProfileService.getProfileByEmail(incomingEmail);
+      const profile = await this.budgetProfileService.getProfileByEmail(
+        user.id
+      );
+      return {
+        email: profile.email,
+        allocations: profile.allocations,
+        monthlyIncome: profile.monthlyIncome,
+      };
     } catch (err) {
       throw new BudgetProfileNotFoundError();
     }
   }
 
-  //todo: write endpoint to authenticate
-
   @Post("/")
   public async create(
     @Body() budgetProfileCreationReq: IBudgetProfileCreationRequestModel
   ): Promise<IBudgetProfileResponse> {
-    const { error } = BudgetProfileSchema.validate(
-      budgetProfileCreationReq
-    );
-    if (error !== undefined)
-      throw new BudgetProfileCreationValidationError(error);
+    const { error } = BudgetProfileSchema.validate(budgetProfileCreationReq);
+    if (error !== undefined) throw new JoiValidationError(error);
     return await this.budgetProfileService.createUser(budgetProfileCreationReq);
   }
 }
