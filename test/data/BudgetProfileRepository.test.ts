@@ -3,10 +3,12 @@ import * as AWS from "aws-sdk";
 import { GetItemInput, PutItemInput } from "aws-sdk/clients/dynamodb";
 import bcrypt from "bcrypt";
 
-import { BudgetProfileRepository } from "../../src/data/repositories";
-import IBudgetProfile from "../../src/interfaces/models/IBudgetProfile";
-import RepositoryFailureStatus from "../../src/models/Enums/RepositoryFailureStatus";
-import RecordNotFoundException from "../../src/models/Exceptions/RecordNotFoundException";
+import { BudgetProfileRepository } from "../../src/data";
+import { IBudgetProfile } from "../../src/interfaces";
+import {
+  RecordNotFoundException,
+  RepositoryFailureStatus,
+} from "../../src/models";
 
 const mockInfo = jest.fn();
 const mockError = jest.fn();

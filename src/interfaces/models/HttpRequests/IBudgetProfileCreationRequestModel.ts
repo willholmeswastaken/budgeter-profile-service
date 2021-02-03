@@ -1,10 +1,10 @@
-import IAllocations from "../IAllocations";
+import { IAllocations } from "../";
 
-interface IBudgetProfileCreationRequestModel {
+export interface IBudgetProfileCreationRequestModel {
     email: string;
     password: string;
     monthlyIncome: number;
     allocations: IAllocations;
-}
+};
 
 export default IBudgetProfileCreationRequestModel;

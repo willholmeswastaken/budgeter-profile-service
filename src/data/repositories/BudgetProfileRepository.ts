@@ -2,20 +2,22 @@ import { Service } from "typedi";
 import { v4 as guid } from "uuid";
 import { Logger } from "tslog";
 import bcrypt from "bcrypt";
-
-import IBudgetProfileRepository from "../../interfaces/data/IBudgetProfileRepository";
-import IRepositoryResult from "../../interfaces/models/IRepositoryResult";
-import IBudgetProfileCreationRequestModel from "../../interfaces/models/HttpRequests/IBudgetProfileCreationRequestModel";
-import IBudgetProfile from "../../interfaces/models/IBudgetProfile";
-
 import { DynamoRepository } from "../DynamoRepository";
-import LogEventNames from "../../models/LogEventNames";
-import RepositoryFailureStatus from "../../models/Enums/RepositoryFailureStatus";
-import RecordNotFoundException from "../../models/Exceptions/RecordNotFoundException";
+import {
+  IBudgetProfileRepository,
+  IRepositoryResult,
+  IBudgetProfileCreationRequestModel,
+  IBudgetProfile,
+} from "../../interfaces";
+import {
+  RepositoryFailureStatus,
+  RecordNotFoundException,
+  LogEventNames,
+} from "../../models";
 
 @Service()
 export class BudgetProfileRepository
-  extends DynamoRepository<IBudgetProfile>
+  extends DynamoRepository
   implements IBudgetProfileRepository {
   tableName: string;
   logger: Logger;

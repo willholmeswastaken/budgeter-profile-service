@@ -23,7 +23,7 @@ const port = process.env.PORT || '8000';
 
 useExpressServer(app, {
     routePrefix: '/api',
-    controllers: [ __dirname + "/api/*.ts" ]
+    controllers: [ __dirname + "/controllers/*.ts" ]
 })
 
 app.listen(port);

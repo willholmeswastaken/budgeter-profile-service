@@ -1,14 +1,14 @@
 import { Service } from "typedi";
 import bcrypt from "bcrypt";
 
-import IBudgetProfileService from "../interfaces/services/IBudgetProfileService";
-import IBudgetProfileResponse from "../interfaces/models/IBudgetProfileResponse";
-import { BudgetProfileRepository } from "../data/repositories";
-import AuthenticationFailureException from "../models/Exceptions/AuthenticationFailureException";
-import IBudgetProfileCreationRequestModel from "../interfaces/models/HttpRequests/IBudgetProfileCreationRequestModel";
-import RepositoryFailureStatus from "../models/Enums/RepositoryFailureStatus";
-import { BudgetProfileCreationError } from "../models/HttpErrors";
-import RecordNotFoundException from "../models/Exceptions/RecordNotFoundException";
+import { IBudgetProfileService, IBudgetProfileResponse, IBudgetProfileCreationRequestModel } from "../interfaces";
+import { BudgetProfileRepository } from "../data";
+import {
+  RepositoryFailureStatus,
+  RecordNotFoundException,
+  AuthenticationFailureException,
+  BudgetProfileCreationError
+} from "../models";
 
 @Service()
 export class BudgetProfileService implements IBudgetProfileService {
@@ -31,7 +31,8 @@ export class BudgetProfileService implements IBudgetProfileService {
     }
 
     const { error, result } = await this.repository.create(user);
-    if (error === RepositoryFailureStatus.Error) throw new BudgetProfileCreationError();
+    if (error === RepositoryFailureStatus.Error)
+      throw new BudgetProfileCreationError();
     return {
       email: result.email,
       allocations: result.allocations,

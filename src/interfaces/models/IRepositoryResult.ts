@@ -1,6 +1,6 @@
-import RepositoryFailureStatus from "../../models/Enums/RepositoryFailureStatus";
+import { RepositoryFailureStatus } from "../../models";
 
-interface IRepositoryResult<T> {
+export interface IRepositoryResult<T> {
     error: RepositoryFailureStatus;
     result: T;
 };

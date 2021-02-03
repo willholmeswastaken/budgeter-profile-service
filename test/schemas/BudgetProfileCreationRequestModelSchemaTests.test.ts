@@ -1,6 +1,5 @@
-import IBudgetProfileCreationRequestModel from '../../src/interfaces/models/HttpRequests/IBudgetProfileCreationRequestModel';
-
-import schema from '../../src/schemas/BudgetProfileCreationRequestModelSchema';
+import { IBudgetProfileCreationRequestModel } from '../../src/interfaces';
+import { BudgetProfileCreationRequestModelSchema } from '../../src/schemas';
 
 describe('BudgetProfileCreationRequestModelSchema tests', () => {
     const setupTestData = (propOverrides: any = {}): IBudgetProfileCreationRequestModel => ({
@@ -17,7 +16,7 @@ describe('BudgetProfileCreationRequestModelSchema tests', () => {
 
     it('returns no errors on valid object', () => {
         const data = setupTestData();
-        const { error } = schema.validate(data);
+        const { error } = BudgetProfileCreationRequestModelSchema.validate(data);
         expect(error).toBeUndefined();
     });
 
@@ -29,7 +28,7 @@ describe('BudgetProfileCreationRequestModelSchema tests', () => {
         ])('when monthlyIncome is = %s', (val, validationErr) => {
             it('returns an error', () => {
                 const data = setupTestData({ monthlyIncome: val });
-                const { error } = schema.validate(data);
+                const { error } = BudgetProfileCreationRequestModelSchema.validate(data);
                 expect(error.details[0].message).toEqual(`"monthlyIncome" ${validationErr}`);
             });
         });
@@ -42,7 +41,7 @@ describe('BudgetProfileCreationRequestModelSchema tests', () => {
         ])('when spending is = %s', (val, validationErr) => {
             it('returns an error', () => {
                 const data = setupTestData({ allocations: val});
-                const { error } = schema.validate(data);
+                const { error } = BudgetProfileCreationRequestModelSchema.validate(data);
                 expect(error.details[0].message).toEqual(validationErr);
             });
         });
@@ -54,7 +53,7 @@ describe('BudgetProfileCreationRequestModelSchema tests', () => {
         ])('when spending is = %s', (val, validationErr) => {
             it('returns an error', () => {
                 const data = setupTestData({ allocations: { ...setupTestData().allocations, spending: val }});
-                const { error } = schema.validate(data);
+                const { error } = BudgetProfileCreationRequestModelSchema.validate(data);
                 expect(error.details[0].message).toEqual(`"allocations.spending" ${validationErr}`);
             });
         });
@@ -66,7 +65,7 @@ describe('BudgetProfileCreationRequestModelSchema tests', () => {
         ])('when bills is = %s', (val, validationErr) => {
             it('returns an error', () => {
                 const data = setupTestData({ allocations: { ...setupTestData().allocations, bills: val }});
-                const { error } = schema.validate(data);
+                const { error } = BudgetProfileCreationRequestModelSchema.validate(data);
                 expect(error.details[0].message).toEqual(`"allocations.bills" ${validationErr}`);
             });
         });
@@ -78,7 +77,7 @@ describe('BudgetProfileCreationRequestModelSchema tests', () => {
         ])('when savings is = %s', (val, validationErr) => {
             it('returns an error', () => {
                 const data = setupTestData({ allocations: { ...setupTestData().allocations, savings: val } });
-                const { error } = schema.validate(data);
+                const { error } = BudgetProfileCreationRequestModelSchema.validate(data);
                 expect(error.details[0].message).toEqual(`"allocations.savings" ${validationErr}`);
             });
         });
@@ -92,7 +91,7 @@ describe('BudgetProfileCreationRequestModelSchema tests', () => {
         ])('when email is = %s', (val, validationErr) => {
             it('returns an error', () => {
                 const data = setupTestData({ email: val });
-                const { error } = schema.validate(data);
+                const { error } = BudgetProfileCreationRequestModelSchema.validate(data);
                 expect(error.details[0].message).toEqual(`"email" ${validationErr}`);
             });
         });
@@ -106,7 +105,7 @@ describe('BudgetProfileCreationRequestModelSchema tests', () => {
         ])('when email is = %s', (val, validationErr) => {
             it('returns an error', () => {
                 const data = setupTestData({ password: val });
-                const { error } = schema.validate(data); 
+                const { error } = BudgetProfileCreationRequestModelSchema.validate(data); 
                 expect(error.details[0].message).toEqual(`"password" ${validationErr}`);
             });
         });

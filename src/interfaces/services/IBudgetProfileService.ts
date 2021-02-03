@@ -1,7 +1,6 @@
-import IBudgetProfileCreationRequestModel from '../models/HttpRequests/IBudgetProfileCreationRequestModel';
-import IBudgetProfileResponse from '../models/IBudgetProfileResponse';
+import { IBudgetProfileResponse, IBudgetProfileCreationRequestModel } from '../models';
 
-interface IBudgetProfileService {
+export interface IBudgetProfileService {
   getProfileByEmail(email: string): Promise<IBudgetProfileResponse>;
   authenticateUser(email: string, password: string): Promise<IBudgetProfileResponse>;
   createUser(user: IBudgetProfileCreationRequestModel): Promise<IBudgetProfileResponse>;
