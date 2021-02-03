@@ -12,7 +12,7 @@ export class AuthMiddleware implements ExpressMiddlewareInterface {
     const token = req.headers["x-access-token"] || req.headers["authorization"];
     if (!token) throw new NoTokenProvidedError();
     try {
-      const ctx: Context = Context.get(req);
+      const ctx: Context = Context.get(req) || new Context();
       const decoded = jwt.verify(token, process.env.JWT_PRIVATE_KEY);
       ctx.user = decoded as IContextUser;
       next();

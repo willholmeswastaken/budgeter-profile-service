@@ -16,7 +16,7 @@ jest.mock("../../src/data", () => {
   };
 });
 
-describe("UserAuthenticationService.ts", () => {
+describe("UserAuthenticationService", () => {
   const OLD_ENV = process.env;
 
   const buildData = (propOverrides?: any) => ({

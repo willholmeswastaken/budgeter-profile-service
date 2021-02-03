@@ -7,7 +7,7 @@ import {
 } from "../../src/models";
 import { HttpError } from "routing-controllers";
 
-describe("BudgetProfileService.ts", () => {
+describe("BudgetProfileService", () => {
   let getByIdSpy;
   let createSpy;
   const repo = new BudgetProfileRepository();
