@@ -11,6 +11,8 @@ import { Container } from "typedi";
 import "./services";
 import "./data/repositories";
 import { Context } from "./models";
+import BudgetController from "./controllers/BudgetController";
+import AuthController from "./controllers/AuthController";
 
 useContainer(Container);
 
@@ -28,7 +30,7 @@ const port = process.env.PORT || "8000";
 
 useExpressServer(app, {
   routePrefix: "/api",
-  controllers: [__dirname + "/controllers/*.ts"],
+  controllers: [ AuthController, BudgetController ],
 });
 
 app.listen(port);
