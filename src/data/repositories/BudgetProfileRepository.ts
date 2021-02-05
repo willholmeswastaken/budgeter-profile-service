@@ -48,7 +48,6 @@ export class BudgetProfileRepository
     throw new RecordNotFoundException(id);
   }
 
-  
   async getByEmail(email: string): Promise<IBudgetProfile> {
     const params = {
       TableName: this.tableName,
@@ -67,6 +66,10 @@ export class BudgetProfileRepository
       this.logger.error(LogEventNames.RecordSearchFailure, err);
     }
     throw new RecordNotFoundException(email);
+  }
+
+  async update(t: any): Promise<IRepositoryResult<IBudgetProfile>> {
+    throw new Error("Method not implemented.");
   }
 
   async create(
@@ -101,5 +104,9 @@ export class BudgetProfileRepository
         error: RepositoryFailureStatus.Error,
       };
     }
+  }
+
+  async delete(t: any): Promise<void> {
+    throw new Error("Method not implemented.");
   }
 }

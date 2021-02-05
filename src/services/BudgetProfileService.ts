@@ -1,6 +1,6 @@
 import { Service } from "typedi";
 
-import { IBudgetProfileService, IBudgetProfileResponse, IBudgetProfileCreationRequestModel } from "../interfaces";
+import { IBudgetProfileService, IBudgetProfileResponse, IBudgetProfileCreationRequestModel, IBudgetProfileUpdateRequestModel } from "../interfaces";
 import { BudgetProfileRepository } from "../data";
 import {
   RepositoryFailureStatus,
@@ -42,5 +42,13 @@ export class BudgetProfileService implements IBudgetProfileService {
 
   async getProfileById(id: string): Promise<IBudgetProfileResponse> {
     return await this.repository.getById(id);
+  }
+
+  updateUser(user: IBudgetProfileUpdateRequestModel): Promise<IBudgetProfileResponse> {
+    throw new Error("Method not implemented.");
+  }
+  
+  deleteUser(id: string): Promise<boolean> {
+    throw new Error("Method not implemented.");
   }
 };
