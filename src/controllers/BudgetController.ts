@@ -4,6 +4,7 @@ import {
   Get,
   JsonController,
   Post,
+  Put,
   Req,
   UseBefore,
 } from "routing-controllers";
@@ -16,6 +17,7 @@ import {
 import {
   IBudgetProfileCreationRequestModel,
   IBudgetProfileResponse,
+  IBudgetProfileUpdateRequestModel,
 } from "../interfaces";
 import { BudgetProfileService } from "../services";
 import BudgetProfileSchema from "../schemas/BudgetProfileCreationRequestModelSchema";
@@ -29,7 +31,7 @@ class BudgetController {
   @UseBefore(AuthMiddleware)
   public async index(@Req() req: any): Promise<IBudgetProfileResponse> {
     const { user } = Context.get(req);
-    const { error } = Joi.string().required().email().validate(user.id);
+    const { error } = Joi.string().required().email().validate(user.email);
 
     if (error !== undefined)
       throw new InvalidRequestDataException("email", error);
@@ -47,6 +49,12 @@ class BudgetController {
     } catch (err) {
       throw new BudgetProfileNotFoundError();
     }
+  }
+
+  @Put("/")
+  @UseBefore(AuthMiddleware)
+  public async update(@Req() req: any, @Body() updateRequest: IBudgetProfileUpdateRequestModel) : Promise<IBudgetProfileResponse> {
+    throw new Error('Not implemented.');
   }
 
   @Post("/")

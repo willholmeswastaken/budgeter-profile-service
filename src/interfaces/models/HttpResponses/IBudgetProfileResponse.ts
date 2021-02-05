@@ -1,4 +1,4 @@
-import { IAllocations } from "./";
+import { IAllocations } from "..";
 
 export interface IBudgetProfileResponse {
     Id: string;
