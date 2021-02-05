@@ -69,7 +69,7 @@ describe("BudgetProfileRepository tests", () => {
       );
       repo = new BudgetProfileRepository(true);
 
-      const res = await repo.getById(sampleProfile.email);
+      const res = await repo.getById(sampleProfile.Id);
 
       expect(res).not.toBeNull();
       expect(res).toEqual(sampleProfile);
@@ -85,7 +85,66 @@ describe("BudgetProfileRepository tests", () => {
       );
       repo = new BudgetProfileRepository(true);
 
-      await expect(repo.getById(sampleProfile.email)).rejects.toThrow(
+      await expect(repo.getById(sampleProfile.Id)).rejects.toThrow(
+        RecordNotFoundException
+      );
+      expect(mockInfo).toHaveBeenCalledTimes(1);
+      expect(mockInfo).toHaveBeenCalledWith(
+        "Record_Not_Found",
+        sampleProfile.Id
+      );
+    });
+
+    it("logs when dynamodb interaction fails", async () => {
+      AWSMock.setSDKInstance(AWS);
+      AWSMock.mock(
+        "DynamoDB.DocumentClient",
+        "query",
+        (params: GetItemInput, callback: Function) => {
+          throw new Error("Dynamo Failed");
+        }
+      );
+      repo = new BudgetProfileRepository(true);
+
+      await expect(repo.getById(sampleProfile.Id)).rejects.toThrow(
+        RecordNotFoundException
+      );
+      expect(mockError).toHaveBeenCalledTimes(1);
+      expect(mockError).toHaveBeenCalledWith(
+        "Record_Search_Failure",
+        new Error("Dynamo Failed")
+      );
+    });
+  });
+
+  describe("getByEmail", () => {
+    it("succeeds on valid query", async () => {
+      AWSMock.setSDKInstance(AWS);
+      AWSMock.mock(
+        "DynamoDB.DocumentClient",
+        "query",
+        (params: GetItemInput, callback: Function) =>
+          callback(null, { Items: [sampleProfile] })
+      );
+      repo = new BudgetProfileRepository(true);
+
+      const res = await repo.getByEmail(sampleProfile.email);
+
+      expect(res).not.toBeNull();
+      expect(res).toEqual(sampleProfile);
+    });
+
+    it("logs when query does not match a record", async () => {
+      AWSMock.setSDKInstance(AWS);
+      AWSMock.mock(
+        "DynamoDB.DocumentClient",
+        "query",
+        (params: GetItemInput, callback: Function) =>
+          callback(null, { Items: [] })
+      );
+      repo = new BudgetProfileRepository(true);
+
+      await expect(repo.getByEmail(sampleProfile.email)).rejects.toThrow(
         RecordNotFoundException
       );
       expect(mockInfo).toHaveBeenCalledTimes(1);
@@ -106,7 +165,7 @@ describe("BudgetProfileRepository tests", () => {
       );
       repo = new BudgetProfileRepository(true);
 
-      await expect(repo.getById(sampleProfile.email)).rejects.toThrow(
+      await expect(repo.getByEmail(sampleProfile.email)).rejects.toThrow(
         RecordNotFoundException
       );
       expect(mockError).toHaveBeenCalledTimes(1);

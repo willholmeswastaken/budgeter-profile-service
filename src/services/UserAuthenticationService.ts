@@ -12,8 +12,8 @@ import { BudgetProfileRepository } from "../data";
 export class UserAuthenticationService implements IUserAuthenticationService {
   constructor(private repository: BudgetProfileRepository) {}
 
-  generateAuthToken(id: string): string {
-    return jwt.sign({ id }, process.env.JWT_PRIVATE_KEY, {
+  generateAuthToken(id: string, email: string): string {
+    return jwt.sign({ id, email }, process.env.JWT_PRIVATE_KEY, {
         expiresIn: `${process.env.JWT_EXPIRES_IN}s`
     });
   }
@@ -22,7 +22,7 @@ export class UserAuthenticationService implements IUserAuthenticationService {
     email: string,
     password: string
   ): Promise<IBudgetProfileResponse> {
-    const user = await this.repository.getById(email);
+    const user = await this.repository.getByEmail(email);
     if (await bcrypt.compare(password, user.password)) return user;
     throw new AuthenticationFailureException(email, "Invalid password!");
   }

@@ -8,12 +8,12 @@ import {
 import { HttpError } from "routing-controllers";
 
 describe("BudgetProfileService", () => {
-  let getByIdSpy;
+  let getByEmailSpy;
   let createSpy;
   const repo = new BudgetProfileRepository();
 
   beforeEach(() => {
-    getByIdSpy = jest
+    getByEmailSpy = jest
       .spyOn(repo, "getById")
       .mockImplementation(() => buildData());
     createSpy = jest
@@ -25,6 +25,7 @@ describe("BudgetProfileService", () => {
   });
 
   const buildData = (propOverrides?: any) => ({
+    Id: 'iamaguid',
     email: "will@willholmes.dev",
     allocations: [],
     monthlyIncome: 5000,
@@ -32,24 +33,24 @@ describe("BudgetProfileService", () => {
     ...propOverrides,
   });
 
-  describe("getProfileByEmail", () => {
+  describe("getProfileById", () => {
     it("gets user by email", async () => {
-      const { email } = buildData();
+      const { Id } = buildData();
 
       const profile: IBudgetProfileResponse = await new BudgetProfileService(
         repo
-      ).getProfileByEmail(email);
+      ).getProfileById(Id);
 
       expect(profile).not.toBeNull();
     });
 
     it("fails to get user by email", async () => {
-      getByIdSpy = jest.spyOn(repo, "getById").mockImplementation(() => null);
-      const { email } = buildData();
+      getByEmailSpy = jest.spyOn(repo, "getById").mockImplementation(() => null);
+      const { Id } = buildData();
 
       const profile: IBudgetProfileResponse = await new BudgetProfileService(
         repo
-      ).getProfileByEmail(email);
+      ).getProfileById(Id);
 
       expect(profile).toBeNull();
     });
@@ -67,7 +68,7 @@ describe("BudgetProfileService", () => {
     });
 
     it("throws if the underlying existing user check is not throwing a recordnotfound exception", async () => {
-      getByIdSpy = jest.spyOn(repo, "getById").mockImplementation(() => {
+      getByEmailSpy = jest.spyOn(repo, "getByEmail").mockImplementation(() => {
         throw new Error("test failing");
       });
 
@@ -79,7 +80,7 @@ describe("BudgetProfileService", () => {
     });
 
     it("throws BudgetProfileCreationError if the repository fails to create the user", async () => {
-      getByIdSpy = jest.spyOn(repo, "getById").mockImplementation(() => {
+      getByEmailSpy = jest.spyOn(repo, "getByEmail").mockImplementation(() => {
         throw new RecordNotFoundException("email");
       });
 
@@ -96,7 +97,7 @@ describe("BudgetProfileService", () => {
     });
 
     it("returns a record if created successfully", async () => {
-      getByIdSpy = jest.spyOn(repo, "getById").mockImplementation(() => {
+      getByEmailSpy = jest.spyOn(repo, "getByEmail").mockImplementation(() => {
         throw new RecordNotFoundException("email");
       });
       const req = buildData();

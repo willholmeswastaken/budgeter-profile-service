@@ -17,11 +17,12 @@ export class BudgetProfileService implements IBudgetProfileService {
   ): Promise<IBudgetProfileResponse> {
     try {
       const {
+        Id,
         email,
         allocations,
         monthlyIncome,
-      } = await this.repository.getById(user.email);
-      return { email, allocations, monthlyIncome };
+      } = await this.repository.getByEmail(user.email);
+      return { Id, email, allocations, monthlyIncome };
     } catch (err) {
       if (!(err instanceof RecordNotFoundException)) {
         throw err;
@@ -32,13 +33,14 @@ export class BudgetProfileService implements IBudgetProfileService {
     if (error === RepositoryFailureStatus.Error)
       throw new BudgetProfileCreationError();
     return {
+      Id: result.Id,
       email: result.email,
       allocations: result.allocations,
       monthlyIncome: result.monthlyIncome,
     };
   }
 
-  async getProfileByEmail(email: string): Promise<IBudgetProfileResponse> {
-    return await this.repository.getById(email);
+  async getProfileById(id: string): Promise<IBudgetProfileResponse> {
+    return await this.repository.getById(id);
   }
 };

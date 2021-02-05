@@ -6,7 +6,8 @@ jest.mock("../../src/data", () => {
   return {
     BudgetProfileRepository: jest.fn().mockImplementation(() => {
       return {
-        getById: (email: string) => ({
+        getByEmail: (email: string) => ({
+          id: 'iamaguid',
           email: "will@willholmes.dev",
           password:
             "$2b$10$4kdTI4MSQQ2jTRSeIV1ZQexu/OyRw7k5.za00M8CDAwHG1/RT0HRO",
@@ -20,6 +21,7 @@ describe("UserAuthenticationService", () => {
   const OLD_ENV = process.env;
 
   const buildData = (propOverrides?: any) => ({
+    id: 'iamaguid',
     email: "will@willholmes.dev",
     password: "Testing123!",
     ...propOverrides,
@@ -37,11 +39,11 @@ describe("UserAuthenticationService", () => {
           "wlkFNcCjknn615FN8VmaMp7KvUAVDSsRF5kbzBdYz8IkX2Tpku6BQEV5wmUgWYo",
         JWT_EXPIRES_IN: "1800",
       };
-      const { email } = buildData();
+      const { id, email } = buildData();
   
       const token: string = await new UserAuthenticationService(
         null
-      ).generateAuthToken(email);
+      ).generateAuthToken(id, email);
       const splitToken = token.split("");
   
       expect(token).not.toEqual("");

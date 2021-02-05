@@ -32,11 +32,13 @@ class AuthController {
         authRequest.password
       );
       const token = await this.userAuthenticationService.generateAuthToken(
-        user.email
+        user.Id,
+        user.email,
       );
       res.setHeader('x-access-token', token);
+      console.log(user);
       return {
-          id: user.email
+          id: user.Id
       };
     } catch (ex) {
       throw new AuthenticationRequestFailureException(ex);

@@ -31,9 +31,9 @@ export class BudgetProfileRepository
   async getById(id: string): Promise<IBudgetProfile> {
     const params = {
       TableName: this.tableName,
-      IndexName: "email-index",
-      KeyConditionExpression: "email = :email",
-      ExpressionAttributeValues: { ":email": id },
+      IndexName: "Id-index",
+      KeyConditionExpression: "Id = :id",
+      ExpressionAttributeValues: { ":id": id },
     };
 
     try {
@@ -46,6 +46,27 @@ export class BudgetProfileRepository
       this.logger.error(LogEventNames.RecordSearchFailure, err);
     }
     throw new RecordNotFoundException(id);
+  }
+
+  
+  async getByEmail(email: string): Promise<IBudgetProfile> {
+    const params = {
+      TableName: this.tableName,
+      IndexName: "email-index",
+      KeyConditionExpression: "email = :email",
+      ExpressionAttributeValues: { ":email": email },
+    };
+
+    try {
+      const data = await (await this.dbClient.query(params).promise()).Items;
+      if (data.length > 0) {
+        return <IBudgetProfile>data[0];
+      }
+      this.logger.info(LogEventNames.RecordNotFound, email);
+    } catch (err) {
+      this.logger.error(LogEventNames.RecordSearchFailure, err);
+    }
+    throw new RecordNotFoundException(email);
   }
 
   async create(

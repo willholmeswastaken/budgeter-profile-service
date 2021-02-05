@@ -3,7 +3,7 @@ import { Request } from "express";
 export class Context {
   static _bindings = new WeakMap<Request, Context>();
 
-  public user: IContextUser = { id: '' };
+  public user: IContextUser = { id: '', email: '' };
 
   constructor() {}
 
@@ -19,4 +19,5 @@ export class Context {
 
 export interface IContextUser {
   id: string;
+  email: string;
 };

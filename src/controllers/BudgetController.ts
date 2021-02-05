@@ -35,10 +35,11 @@ class BudgetController {
       throw new InvalidRequestDataException("email", error);
 
     try {
-      const profile = await this.budgetProfileService.getProfileByEmail(
+      const profile = await this.budgetProfileService.getProfileById(
         user.id
       );
       return {
+        Id: profile.Id,
         email: profile.email,
         allocations: profile.allocations,
         monthlyIncome: profile.monthlyIncome,
