@@ -6,8 +6,8 @@ export interface IBudgetProfileRepository
   extends ICreate<IBudgetProfile>,
     IGetById<IBudgetProfile>,
     IGetByEmail<IBudgetProfile>,
-    IUpdate<IBudgetProfile>,
-    IDelete {
+    IUpdate<boolean>,
+    IDelete<boolean> {
   logger: Logger;
 }
 

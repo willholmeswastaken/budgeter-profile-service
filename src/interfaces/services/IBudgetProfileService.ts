@@ -3,7 +3,7 @@ import { IBudgetProfileResponse, IBudgetProfileCreationRequestModel, IBudgetProf
 export interface IBudgetProfileService {
   getProfileById(id: string): Promise<IBudgetProfileResponse>;
   createUser(user: IBudgetProfileCreationRequestModel): Promise<IBudgetProfileResponse>;
-  updateUser(user: IBudgetProfileUpdateRequestModel) : Promise<IBudgetProfileResponse>;
+  updateUser(updateReq: IBudgetProfileUpdateRequestModel) : Promise<boolean>;
   deleteUser(id: string) : Promise<boolean>
 };
 

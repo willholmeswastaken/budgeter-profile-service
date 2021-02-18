@@ -36,7 +36,6 @@ class AuthController {
         user.email,
       );
       res.setHeader('x-access-token', token);
-      console.log(user);
       return {
           id: user.Id
       };
