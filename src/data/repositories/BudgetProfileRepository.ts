@@ -146,7 +146,7 @@ export class BudgetProfileRepository
         result: true
       };
     } catch (err) {
-      this.logger.error(LogEventNames.RecordFailedToUpdate, err);
+      this.logger.error(LogEventNames.RecordFailedToDelete, err);
       return {
         error: RepositoryFailureStatus.Error,
         result: false
