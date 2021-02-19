@@ -7,6 +7,7 @@ import {
   Put,
   Req,
   UseBefore,
+  Delete
 } from "routing-controllers";
 import {
   BudgetProfileNotFoundError,
@@ -53,8 +54,10 @@ class BudgetController {
 
   @Put("/")
   @UseBefore(AuthMiddleware)
-  public async update(@Req() req: any, @Body() updateRequest: IBudgetProfileUpdateRequestModel) : Promise<IBudgetProfileResponse> {
-    throw new Error('Not implemented.');
+  public async update(@Req() req: any, @Body() updateRequest: IBudgetProfileUpdateRequestModel) : Promise<boolean> {
+    const { user } = Context.get(req);
+    updateRequest.Id = user.id;
+    return await this.budgetProfileService.updateUser(updateRequest);
   }
 
   @Post("/")
@@ -64,6 +67,11 @@ class BudgetController {
     const { error } = BudgetProfileSchema.validate(budgetProfileCreationReq);
     if (error !== undefined) throw new JoiValidationError(error);
     return await this.budgetProfileService.createUser(budgetProfileCreationReq);
+  }
+
+  @Delete("/")
+  public async delete(@Req() req: any) {
+    throw new Error('Not implemented.');
   }
 }
 

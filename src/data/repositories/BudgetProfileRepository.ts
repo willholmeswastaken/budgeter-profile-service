@@ -8,6 +8,7 @@ import {
   IRepositoryResult,
   IBudgetProfileCreationRequestModel,
   IBudgetProfile,
+  IBudgetProfileUpdateRequestModel,
 } from "../../interfaces";
 import {
   RepositoryFailureStatus,
@@ -68,8 +69,32 @@ export class BudgetProfileRepository
     throw new RecordNotFoundException(email);
   }
 
-  async update(t: any): Promise<IRepositoryResult<IBudgetProfile>> {
-    throw new Error("Method not implemented.");
+  async update(t: IBudgetProfileUpdateRequestModel): Promise<IRepositoryResult<boolean>> {
+    const params = {
+      TableName: this.tableName,
+      Key: {
+        "Id": t.Id
+      },
+      UpdateExpression: 'set monthlyIncome = :m, allocations = :a',
+      ExpressionAttributeValues: {
+        ":m": t.monthlyIncome,
+        ":a": t.allocations
+      },
+      ReturnValues: "UPDATED_NEW"
+    };
+    try {
+      await this.dbClient.update(params);
+      return {
+        error: RepositoryFailureStatus.None,
+        result: true
+      };
+    } catch (err) {
+      this.logger.error(LogEventNames.RecordFailedToUpdate, err);
+      return {
+        error: RepositoryFailureStatus.Error,
+        result: false
+      };
+    }
   }
 
   async create(
@@ -106,7 +131,26 @@ export class BudgetProfileRepository
     }
   }
 
-  async delete(t: any): Promise<void> {
-    throw new Error("Method not implemented.");
+  async delete(t: any): Promise<IRepositoryResult<boolean>>
+   {
+    const params = {
+      TableName: this.tableName,
+      Key: {
+        "Id": t.Id
+      },
+    };
+    try {
+      await this.dbClient.delete(params);
+      return {
+        error: RepositoryFailureStatus.None,
+        result: true
+      };
+    } catch (err) {
+      this.logger.error(LogEventNames.RecordFailedToDelete, err);
+      return {
+        error: RepositoryFailureStatus.Error,
+        result: false
+      };
+    }
   }
 }
