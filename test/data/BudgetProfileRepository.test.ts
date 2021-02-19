@@ -1,6 +1,6 @@
 import * as AWSMock from "aws-sdk-mock";
 import * as AWS from "aws-sdk";
-import { GetItemInput, PutItemInput } from "aws-sdk/clients/dynamodb";
+import { DeleteItemInput, GetItemInput, PutItemInput, UpdateItemInput } from "aws-sdk/clients/dynamodb";
 import bcrypt from "bcrypt";
 
 import { BudgetProfileRepository } from "../../src/data";
@@ -222,6 +222,86 @@ describe("BudgetProfileRepository tests", () => {
       expect(res).not.toBeNull();
       expect(res).toEqual({
         result: null,
+        error: RepositoryFailureStatus.Error,
+      });
+    });
+  });
+
+  describe("update", () => {
+    it("updates a profile on valid input", async () => {
+      AWSMock.setSDKInstance(AWS);
+      AWSMock.mock(
+        "DynamoDB.DocumentClient",
+        "update",
+        (params: UpdateItemInput, callback: Function) => callback(null, {})
+      );
+      repo = new BudgetProfileRepository(true);
+
+      const res = await repo.update({ Id: sampleProfile.Id, allocations: sampleProfile.allocations, monthlyIncome: sampleProfile.monthlyIncome });
+
+      expect(res).not.toBeNull();
+      expect(res).toEqual({
+        result: true,
+        error: RepositoryFailureStatus.None,
+      });
+    });
+
+    it("logs and outputs failure when dynamodb interaction fails", async () => {
+      AWSMock.setSDKInstance(AWS);
+      AWSMock.mock(
+        "DynamoDB.DocumentClient",
+        "update",
+        (params: UpdateItemInput, callback: Function) => {
+          throw new Error("Dynamo Failed");
+        }
+      );
+      repo = new BudgetProfileRepository(true);
+
+      const res = await repo.update({ Id: sampleProfile.Id, allocations: sampleProfile.allocations, monthlyIncome: sampleProfile.monthlyIncome });
+
+      expect(res).not.toBeNull();
+      expect(res).toEqual({
+        result: false,
+        error: RepositoryFailureStatus.Error,
+      });
+    });
+  });
+
+  describe("delete", () => {
+    it("deletes a profile on valid input", async () => {
+      AWSMock.setSDKInstance(AWS);
+      AWSMock.mock(
+        "DynamoDB.DocumentClient",
+        "delete",
+        (params: DeleteItemInput, callback: Function) => callback(null, {})
+      );
+      repo = new BudgetProfileRepository(true);
+
+      const res = await repo.delete(sampleProfile.Id);
+
+      expect(res).not.toBeNull();
+      expect(res).toEqual({
+        result: true,
+        error: RepositoryFailureStatus.None,
+      });
+    });
+
+    it("logs and outputs failure when dynamodb interaction fails", async () => {
+      AWSMock.setSDKInstance(AWS);
+      AWSMock.mock(
+        "DynamoDB.DocumentClient",
+        "delete",
+        (params: DeleteItemInput, callback: Function) => {
+          throw new Error("Dynamo Failed");
+        }
+      );
+      repo = new BudgetProfileRepository(true);
+
+      const res = await repo.delete(sampleProfile.Id);
+
+      expect(res).not.toBeNull();
+      expect(res).toEqual({
+        result: false,
         error: RepositoryFailureStatus.Error,
       });
     });

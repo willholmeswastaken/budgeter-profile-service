@@ -140,7 +140,7 @@ export class BudgetProfileRepository
       },
     };
     try {
-      await this.dbClient.update(params);
+      await this.dbClient.delete(params);
       return {
         error: RepositoryFailureStatus.None,
         result: true

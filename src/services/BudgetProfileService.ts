@@ -6,7 +6,8 @@ import {
   RepositoryFailureStatus,
   RecordNotFoundException,
   BudgetProfileCreationError,
-  BudgetProfileUpdateError
+  BudgetProfileUpdateError,
+  BudgetProfileDeletionError
 } from "../models";
 
 @Service()
@@ -51,7 +52,9 @@ export class BudgetProfileService implements IBudgetProfileService {
     return result;
   }
   
-  deleteUser(id: string): Promise<boolean> {
-    throw new Error("Method not implemented.");
+  async deleteUser(id: string): Promise<boolean> {
+    const { error, result } = await this.repository.delete(id);
+    if(error === RepositoryFailureStatus.Error) throw new BudgetProfileDeletionError();
+    return result;
   }
 };
