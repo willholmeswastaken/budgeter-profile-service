@@ -10,22 +10,30 @@ import { HttpError } from "routing-controllers";
 describe("BudgetProfileService", () => {
   let getByEmailSpy;
   let createSpy;
+  let updateSpy;
+  let deleteSpy;
   const repo = new BudgetProfileRepository();
 
   beforeEach(() => {
     getByEmailSpy = jest
       .spyOn(repo, "getById")
       .mockImplementation(() => buildData());
-    createSpy = jest
-      .spyOn(repo, "create")
-      .mockImplementation(async () => ({
-        error: RepositoryFailureStatus.None,
-        result: buildData(),
-      }));
+    createSpy = jest.spyOn(repo, "create").mockImplementation(async () => ({
+      error: RepositoryFailureStatus.None,
+      result: buildData(),
+    }));
+    updateSpy = jest.spyOn(repo, "update").mockImplementation(async () => ({
+      error: RepositoryFailureStatus.None,
+      result: true,
+    }));
+    deleteSpy = jest.spyOn(repo, "delete").mockImplementation(async () => ({
+      error: RepositoryFailureStatus.None,
+      result: true,
+    }));
   });
 
   const buildData = (propOverrides?: any) => ({
-    Id: 'iamaguid',
+    Id: "iamaguid",
     email: "will@willholmes.dev",
     allocations: [],
     monthlyIncome: 5000,
@@ -45,7 +53,9 @@ describe("BudgetProfileService", () => {
     });
 
     it("fails to get user by email", async () => {
-      getByEmailSpy = jest.spyOn(repo, "getById").mockImplementation(() => null);
+      getByEmailSpy = jest
+        .spyOn(repo, "getById")
+        .mockImplementation(() => null);
       const { Id } = buildData();
 
       const profile: IBudgetProfileResponse = await new BudgetProfileService(
@@ -107,6 +117,88 @@ describe("BudgetProfileService", () => {
       ).createUser(req);
 
       expect(profile).not.toBeNull();
+    });
+  });
+
+  describe("updateUser", () => {
+    it("throws BudgetProfileUpdateError if the repository fails to update the user", async () => {
+      updateSpy = jest.spyOn(repo, "update").mockImplementation(async () => ({
+        error: RepositoryFailureStatus.Error,
+        result: null,
+      }));
+
+      const req = buildData();
+
+      await expect(
+        new BudgetProfileService(repo).updateUser(req)
+      ).rejects.toThrow(HttpError);
+    });
+
+    it("returns true if updated successfully", async () => {
+      updateSpy = jest.spyOn(repo, "update").mockImplementation(async () => ({
+        error: RepositoryFailureStatus.None,
+        result: true,
+      }));
+
+      const req = buildData();
+
+      const res: boolean = await new BudgetProfileService(repo).updateUser(req);
+
+      expect(res).toBeTruthy();
+    });
+
+    it("returns false if updated unsuccessfully", async () => {
+      updateSpy = jest.spyOn(repo, "update").mockImplementation(async () => ({
+        error: RepositoryFailureStatus.None,
+        result: false,
+      }));
+
+      const req = buildData();
+
+      const res: boolean = await new BudgetProfileService(repo).updateUser(req);
+
+      expect(res).toBeFalsy();
+    });
+  });
+
+  describe("deleteUser", () => {
+    it("throws BudgetProfileDeletionError if the repository fails to delete the user", async () => {
+      deleteSpy = jest.spyOn(repo, "delete").mockImplementation(async () => ({
+        error: RepositoryFailureStatus.Error,
+        result: null,
+      }));
+
+      const req = buildData();
+
+      await expect(
+        new BudgetProfileService(repo).deleteUser(req)
+      ).rejects.toThrow(HttpError);
+    });
+
+    it("returns true if deleted successfully", async () => {
+      deleteSpy = jest.spyOn(repo, "delete").mockImplementation(async () => ({
+        error: RepositoryFailureStatus.None,
+        result: true,
+      }));
+
+      const req = buildData();
+
+      const res: boolean = await new BudgetProfileService(repo).deleteUser(req);
+
+      expect(res).toBeTruthy();
+    });
+
+    it("returns false if deleted unsuccessfully", async () => {
+      deleteSpy = jest.spyOn(repo, "delete").mockImplementation(async () => ({
+        error: RepositoryFailureStatus.None,
+        result: false,
+      }));
+
+      const req = buildData();
+
+      const res: boolean = await new BudgetProfileService(repo).deleteUser(req);
+
+      expect(res).toBeFalsy();
     });
   });
 });
