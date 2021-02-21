@@ -88,8 +88,8 @@ describe("BudgetProfileRepository tests", () => {
       await expect(repo.getById(sampleProfile.Id)).rejects.toThrow(
         RecordNotFoundException
       );
-      expect(mockInfo).toHaveBeenCalledTimes(1);
-      expect(mockInfo).toHaveBeenCalledWith(
+      expect(mockError).toHaveBeenCalledTimes(1);
+      expect(mockError).toHaveBeenCalledWith(
         "Record_Not_Found",
         sampleProfile.Id
       );
@@ -147,8 +147,8 @@ describe("BudgetProfileRepository tests", () => {
       await expect(repo.getByEmail(sampleProfile.email)).rejects.toThrow(
         RecordNotFoundException
       );
-      expect(mockInfo).toHaveBeenCalledTimes(1);
-      expect(mockInfo).toHaveBeenCalledWith(
+      expect(mockError).toHaveBeenCalledTimes(1);
+      expect(mockError).toHaveBeenCalledWith(
         "Record_Not_Found",
         sampleProfile.email
       );
