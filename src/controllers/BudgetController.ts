@@ -21,8 +21,8 @@ import {
   IBudgetProfileUpdateRequestModel,
 } from "../interfaces";
 import { BudgetProfileService } from "../services";
-import BudgetProfileSchema from "../schemas/BudgetProfileCreationRequestModelSchema";
 import { AuthMiddleware } from "../middleware";
+import { BudgetProfileCreationRequestModelSchema, BudgetProfileUpdateRequestModelSchema } from "../schemas";
 
 @JsonController("/budgetProfile")
 class BudgetController {
@@ -52,26 +52,32 @@ class BudgetController {
     }
   }
 
-  @Put("/")
-  @UseBefore(AuthMiddleware)
-  public async update(@Req() req: any, @Body() updateRequest: IBudgetProfileUpdateRequestModel) : Promise<boolean> {
-    const { user } = Context.get(req);
-    updateRequest.Id = user.id;
-    return await this.budgetProfileService.updateUser(updateRequest);
-  }
-
   @Post("/")
   public async create(
     @Body() budgetProfileCreationReq: IBudgetProfileCreationRequestModel
   ): Promise<IBudgetProfileResponse> {
-    const { error } = BudgetProfileSchema.validate(budgetProfileCreationReq);
+    const { error } = BudgetProfileCreationRequestModelSchema.validate(budgetProfileCreationReq);
     if (error !== undefined) throw new JoiValidationError(error);
     return await this.budgetProfileService.createUser(budgetProfileCreationReq);
   }
 
+  @Put("/")
+  @UseBefore(AuthMiddleware)
+  public async update(@Req() req: any, @Body() updateRequest: IBudgetProfileUpdateRequestModel) : Promise<boolean> {
+    const { error } = BudgetProfileUpdateRequestModelSchema.validate(updateRequest);
+    if (error !== undefined) throw new JoiValidationError(error);
+    
+    const { user } = Context.get(req);
+    updateRequest.Id = user.id;
+
+    return await this.budgetProfileService.updateUser(updateRequest);
+  }
+
   @Delete("/")
+  @UseBefore(AuthMiddleware)
   public async delete(@Req() req: any) {
-    throw new Error('Not implemented.');
+    const { user } = Context.get(req);
+    return await this.budgetProfileService.deleteUser(user.id);
   }
 }
 

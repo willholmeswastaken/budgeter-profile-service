@@ -38,11 +38,12 @@ export class BudgetProfileRepository
     };
 
     try {
+      this.logger.info(LogEventNames.RepositoryActions.Reading);
       const data = await (await this.dbClient.query(params).promise()).Items;
       if (data.length > 0) {
         return <IBudgetProfile>data[0];
       }
-      this.logger.info(LogEventNames.RecordNotFound, id);
+      this.logger.error(LogEventNames.RecordNotFound, id);
     } catch (err) {
       this.logger.error(LogEventNames.RecordSearchFailure, err);
     }
@@ -58,11 +59,12 @@ export class BudgetProfileRepository
     };
 
     try {
+      this.logger.info(LogEventNames.RepositoryActions.Reading);
       const data = await (await this.dbClient.query(params).promise()).Items;
       if (data.length > 0) {
         return <IBudgetProfile>data[0];
       }
-      this.logger.info(LogEventNames.RecordNotFound, email);
+      this.logger.error(LogEventNames.RecordNotFound, email);
     } catch (err) {
       this.logger.error(LogEventNames.RecordSearchFailure, err);
     }
@@ -83,7 +85,8 @@ export class BudgetProfileRepository
       ReturnValues: "UPDATED_NEW"
     };
     try {
-      await this.dbClient.update(params);
+      this.logger.info(LogEventNames.RepositoryActions.Updating);
+      await this.dbClient.update(params).promise();
       return {
         error: RepositoryFailureStatus.None,
         result: true
@@ -117,6 +120,7 @@ export class BudgetProfileRepository
     };
 
     try {
+      this.logger.info(LogEventNames.RepositoryActions.Creating);
       await this.dbClient.put(params).promise();
       return {
         result: model,
@@ -131,16 +135,18 @@ export class BudgetProfileRepository
     }
   }
 
-  async delete(t: any): Promise<IRepositoryResult<boolean>>
+  async delete(t: string): Promise<IRepositoryResult<boolean>>
    {
+    this.logger.info(t);
     const params = {
       TableName: this.tableName,
       Key: {
-        "Id": t.Id
+        "Id": t
       },
     };
     try {
-      await this.dbClient.delete(params);
+      this.logger.info(LogEventNames.RepositoryActions.Deleting);
+      await this.dbClient.delete(params).promise();
       return {
         error: RepositoryFailureStatus.None,
         result: true
